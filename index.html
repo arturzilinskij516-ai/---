@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b1120">
 <title>Мини-колбы — 50 уровней</title>
+
+<!-- VK Bridge -->
+<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -71,7 +75,6 @@
     padding: 10px 0;
   }
 
-  /* ================== КОЛБА ================== */
   .tube {
     width: var(--tube-w);
     height: var(--tube-h);
@@ -150,7 +153,6 @@
     border-bottom-right-radius: 22px;
   }
 
-  /* ================== КНОПКИ ================== */
   .controls {
     display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
   }
@@ -193,7 +195,6 @@
 
   #nextBtn { margin-top: 14px; display: none; }
 
-  /* ================== МОДАЛКА ВЫБОРА УРОВНЯ ================== */
   .modal {
     position: fixed; inset: 0;
     background: rgba(2,6,20,.7);
@@ -279,7 +280,6 @@
     position: absolute; top: 3px; right: 5px; font-size: 10px;
   }
 
-  /* ================== ТОСТ ================== */
   .toast {
     position: fixed; left: 50%; bottom: 28px;
     transform: translateX(-50%) translateY(30px);
@@ -326,7 +326,6 @@
 <div class="status" id="status"></div>
 <button id="nextBtn">Следующий уровень →</button>
 
-<!-- ============ МОДАЛКА ВЫБОРА УРОВНЯ ============ -->
 <div class="modal" id="modal">
   <div class="modal-box">
     <div class="modal-head">
@@ -343,7 +342,7 @@
 
 <script>
 /* ============================================================
-   ЦВЕТА (с градиентами для объёма)
+   ЦВЕТА
 ============================================================ */
 const COLORS = {
   R: { g: 'linear-gradient(180deg, #ff7a7a, #dc2626)' },
@@ -358,82 +357,36 @@ const COLOR_KEYS = Object.keys(COLORS);
 const TUBE_SIZE = 3;
 
 /* ============================================================
-   50 РАЗНООБРАЗНЫХ УРОВНЕЙ
-   colors: 2–6, empty: 2–3 (разные комбинации, палитра ротируется)
+   50 УРОВНЕЙ
 ============================================================ */
 const LEVELS = [
-  // 1–5 · знакомство (2–3 цвета)
-  { colors: 2, empty: 2 },
-  { colors: 2, empty: 2 },
-  { colors: 3, empty: 2 },
-  { colors: 3, empty: 2 },
-  { colors: 3, empty: 3 },   // посвободнее
-
-  // 6–12 · три цвета с перебоями
-  { colors: 3, empty: 2 },
-  { colors: 3, empty: 2 },
+  { colors: 2, empty: 2 }, { colors: 2, empty: 2 }, { colors: 3, empty: 2 },
+  { colors: 3, empty: 2 }, { colors: 3, empty: 3 },
+  { colors: 3, empty: 2 }, { colors: 3, empty: 2 }, { colors: 4, empty: 2 },
+  { colors: 4, empty: 2 }, { colors: 4, empty: 3 }, { colors: 4, empty: 2 },
   { colors: 4, empty: 2 },
-  { colors: 4, empty: 2 },
-  { colors: 4, empty: 3 },   // передышка
-  { colors: 4, empty: 2 },
-  { colors: 4, empty: 2 },
-
-  // 13–20 · четыре–пять цветов
-  { colors: 5, empty: 2 },
-  { colors: 5, empty: 2 },
-  { colors: 5, empty: 3 },   // посвободнее
-  { colors: 5, empty: 2 },
-  { colors: 4, empty: 2 },   // лёгкая передышка
-  { colors: 5, empty: 2 },
-  { colors: 5, empty: 2 },
-  { colors: 5, empty: 2 },
-
-  // 21–30 · пять–шесть цветов
+  { colors: 5, empty: 2 }, { colors: 5, empty: 2 }, { colors: 5, empty: 3 },
+  { colors: 5, empty: 2 }, { colors: 4, empty: 2 }, { colors: 5, empty: 2 },
+  { colors: 5, empty: 2 }, { colors: 5, empty: 2 },
+  { colors: 6, empty: 2 }, { colors: 5, empty: 2 }, { colors: 6, empty: 2 },
+  { colors: 6, empty: 3 }, { colors: 6, empty: 2 }, { colors: 6, empty: 2 },
+  { colors: 5, empty: 2 }, { colors: 6, empty: 2 }, { colors: 6, empty: 2 },
   { colors: 6, empty: 2 },
-  { colors: 5, empty: 2 },   // передышка
+  { colors: 6, empty: 3 }, { colors: 6, empty: 2 }, { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 }, { colors: 5, empty: 2 }, { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 }, { colors: 6, empty: 3 }, { colors: 6, empty: 2 },
   { colors: 6, empty: 2 },
-  { colors: 6, empty: 3 },   // бонус
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 },
-  { colors: 5, empty: 2 },   // передышка
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 },
-
-  // 31–40 · челлендж
-  { colors: 6, empty: 3 },   // передышка
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 },
-  { colors: 5, empty: 2 },   // смена ритма
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 3 },   // бонус
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 },
-
-  // 41–50 · финал
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 },
-  { colors: 5, empty: 2 },   // передышка
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 3 },   // бонус
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 }, { colors: 6, empty: 2 }, { colors: 5, empty: 2 },
+  { colors: 6, empty: 2 }, { colors: 6, empty: 2 }, { colors: 6, empty: 3 },
+  { colors: 6, empty: 2 }, { colors: 6, empty: 2 }, { colors: 6, empty: 2 },
   { colors: 6, empty: 2 },
 ];
 
 /* ============================================================
-   ПРОГРЕСС (localStorage)
+   ПРОГРЕСС
 ============================================================ */
 const STORAGE_KEY = 'miniTubes_v1';
-let progress = {
-  unlocked: 0,     // самый высокий открытый индекс (0-based)
-  completed: {},   // { "0": true, "1": true }
-  records: {},     // { "0": 7, "1": 12 }
-};
+let progress = { unlocked: 0, completed: {}, records: {} };
 
 function loadProgress() {
   try {
@@ -473,7 +426,7 @@ const progressText = document.getElementById('progressText');
 const toastEl    = document.getElementById('toast');
 
 /* ============================================================
-   ГЕНЕРАЦИЯ УРОВНЯ
+   ГЕНЕРАЦИЯ
 ============================================================ */
 function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) {
@@ -483,7 +436,6 @@ function shuffle(a) {
   return a;
 }
 
-/* Ротация палитры: каждый уровень — свежий набор цветов */
 function paletteFor(index, count) {
   const offset = (index * 2) % COLOR_KEYS.length;
   const rotated = [];
@@ -508,15 +460,10 @@ function buildLevel(index) {
 
     const ready = res.some(t => t.length === TUBE_SIZE && t.every(c => c === t[0]));
     if (ready) continue;
-
-    // «Скучный» старт — когда все одинаковые цвета идут подряд в одной колбе.
-    // Проверяем разнообразие: в каждой колбе минимум 2 разных цвета.
     const diverse = res.every(t => t.length === 0 || new Set(t).size >= 2);
     if (!diverse) continue;
-
     return res;
   }
-  // фолбэк
   const res = [];
   for (let i = 0; i < cfg.colors; i++) res.push([keys[i], keys[(i+1)%keys.length], keys[i]]);
   for (let i = 0; i < cfg.empty; i++) res.push([]);
@@ -603,11 +550,11 @@ function onTubeClick(idx) {
 }
 
 /* ============================================================
-   АНИМАЦИЯ ПЕРЕЛИВА: колба летит, наклоняется, пересыпает
+   АНИМАЦИЯ
 ============================================================ */
 async function doPour(from, to) {
   busy = true;
-  render(); // блокируем кнопки
+  render();
 
   const amount   = Math.min(countTopSame(tubes[from]), TUBE_SIZE - tubes[to].length);
   const colorKey = topColor(tubes[from]);
@@ -643,7 +590,6 @@ async function doPour(from, to) {
 
   fromEl.classList.add('flying');
 
-  /* 1) подъём */
   await fromEl.animate(
     [
       { transform: 'translate(0,0) rotate(0deg)' },
@@ -652,7 +598,6 @@ async function doPour(from, to) {
     { duration: 170, easing: 'ease-out', fill: 'forwards' }
   ).finished;
 
-  /* 2) полёт + наклон */
   await fromEl.animate(
     [
       { transform: `translate(0,-26px) rotate(0deg)` },
@@ -661,7 +606,6 @@ async function doPour(from, to) {
     { duration: 460, easing: 'cubic-bezier(.45,0,.2,1)', fill: 'forwards' }
   ).finished;
 
-  /* 3) струя */
   const streamTop    = targetMouthY + 2;
   const streamBottom = toRect.top + toRect.height * 0.62;
   const streamHeight = Math.max(18, streamBottom - streamTop);
@@ -691,7 +635,6 @@ async function doPour(from, to) {
     { duration: 220, easing: 'ease-out', fill: 'forwards' }
   ).finished;
 
-  /* 4) слои источника исчезают, в цели появляются */
   const srcLayers = fromEl.querySelectorAll('.layer');
   for (let i = 0; i < amount; i++) {
     const l = srcLayers[srcLayers.length - 1 - i];
@@ -722,7 +665,6 @@ async function doPour(from, to) {
 
   await new Promise(r => setTimeout(r, 340));
 
-  /* 5) струя исчезает */
   stream.animate(
     [
       { height: streamHeight + 'px', opacity: 1 },
@@ -733,7 +675,6 @@ async function doPour(from, to) {
   await new Promise(r => setTimeout(r, 200));
   stream.remove();
 
-  /* 6) возврат */
   await fromEl.animate(
     [
       { transform: `translate(${dx}px, ${dy}px) rotate(${angle}deg)` },
@@ -743,7 +684,6 @@ async function doPour(from, to) {
     { duration: 520, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' }
   ).finished;
 
-  /* финальный снап */
   pourData(from, to);
   moves++;
   movesEl.textContent = moves;
@@ -758,7 +698,7 @@ async function doPour(from, to) {
 }
 
 /* ============================================================
-   ПОБЕДА / РАЗБЛОКИРОВКА / ПРОГРЕСС
+   ПОБЕДА
 ============================================================ */
 function checkWin() {
   const ok = tubes.every(t => t.length === 0 || isDone(t));
@@ -766,12 +706,10 @@ function checkWin() {
 
   won = true;
 
-  // Прогресс
   const isNewRecord = !progress.records[level] || moves < progress.records[level];
   if (isNewRecord) progress.records[level] = moves;
   progress.completed[level] = true;
 
-  // Разблокировка следующего
   let unlockedSomething = false;
   if (level === progress.unlocked && level < LEVELS.length - 1) {
     progress.unlocked = level + 1;
@@ -779,7 +717,6 @@ function checkWin() {
   }
   saveProgress();
 
-  // Показать победу
   statusEl.className = 'status win';
   const isLast = level === LEVELS.length - 1;
   if (isLast) {
@@ -797,10 +734,9 @@ function checkWin() {
 }
 
 /* ============================================================
-   СТАРТ / УПРАВЛЕНИЕ
+   УПРАВЛЕНИЕ
 ============================================================ */
 function startLevel(index) {
-  // Нельзя открыть заблокированный уровень
   if (index < 0 || index >= LEVELS.length) return;
   if (index > progress.unlocked) {
     showToast('🔒 Уровень закрыт. Пройди предыдущие!');
@@ -839,7 +775,7 @@ function undo() {
 }
 
 /* ============================================================
-   МОДАЛКА ВЫБОРА УРОВНЯ
+   МОДАЛКА
 ============================================================ */
 function renderLevelGrid() {
   levelsGrid.innerHTML = '';
@@ -918,14 +854,35 @@ levelsBtn.addEventListener('click',  () => { if (!busy) openModalFn(); });
 closeModal.addEventListener('click', closeModalFn);
 modal.addEventListener('click', (e) => { if (e.target === modal) closeModalFn(); });
 
-// Esc закрывает модалку
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeModalFn();
 });
 
 /* ============================================================
+   VK BRIDGE — инициализация мини-приложения
+============================================================ */
+function initVK() {
+  if (typeof vkBridge === 'undefined') {
+    console.log('VK Bridge не найден (обычный браузер)');
+    return;
+  }
+  vkBridge.send('VKWebAppInit')
+    .then(() => {
+      console.log('✅ VK Bridge инициализирован');
+      // Красим хедер ВК под фон игры
+      vkBridge.send('VKWebAppSetViewSettings', {
+        status_bar_style: 'light',
+        action_bar_color: '#0b1120',
+        navigation_bar_color: '#0b1120'
+      }).catch(() => {});
+    })
+    .catch(err => console.error('❌ Ошибка VK Bridge:', err));
+}
+
+/* ============================================================
    СТАРТ
 ============================================================ */
+initVK();
 loadProgress();
 startLevel(progress.unlocked);
 </script>
