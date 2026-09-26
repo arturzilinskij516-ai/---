@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0b1120">
+<title>Мини-колбы — 50 уровней</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --tube-w: 60px;
+    --tube-h: 180px;
+    --gap: 12px;
+  }
+  @media (max-width: 720px) { :root { --tube-w: 52px; --tube-h: 156px; --gap: 10px; } }
+  @media (max-width: 520px) { :root { --tube-w: 42px; --tube-h: 128px; --gap: 8px;  } }
+  @media (max-width: 400px) { :root { --tube-w: 36px; --tube-h: 112px; --gap: 6px;  } }
+
+  html, body { height: 100%; }
+  body {
+    margin: 0; min-height: 100vh;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: #e6ecff;
+    background:
+      radial-gradient(1200px 800px at 50% -10%, #22345c 0%, #0f1a33 45%, #070b16 100%) fixed;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 14px 10px 44px;
+    user-select: none;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0; pointer-events: none;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(125,211,252,.06), transparent 55%),
+      radial-gradient(circle at 80% 70%, rgba(168,85,247,.06), transparent 55%);
+  }
+
+  h1 {
+    font-size: 22px; margin: 2px 0 2px; letter-spacing: .5px;
+    background: linear-gradient(180deg, #e0f2fe, #7dd3fc);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 12px rgba(125,211,252,.35));
+  }
+  .sub {
+    font-size: 12.5px; opacity: .72; margin-bottom: 12px;
+    text-align: center; line-height: 1.45; max-width: 440px;
+    padding: 0 8px;
+  }
+
+  .hud {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13.5px; margin-bottom: 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    padding: 6px 10px; border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.1);
+    box-shadow: 0 6px 22px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter: blur(6px);
+  }
+  .hud b { color: #7dd3fc; font-weight: 700; }
+  .hud .sep { opacity: .35; }
+
+  .board {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    align-items: flex-end;
+    gap: 22px var(--gap);
+    max-width: 760px; width: 100%;
+    margin-bottom: 18px;
+    padding: 10px 0;
+  }
+
+  /* ================== КОЛБА ================== */
+  .tube {
+    width: var(--tube-w);
+    height: var(--tube-h);
+    border-radius: 6px 6px 30px 30px / 6px 6px 34px 34px;
+    padding: 6px 5px 8px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02) 55%, rgba(255,255,255,.06)),
+      linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,0) 30%, rgba(255,255,255,0) 70%, rgba(255,255,255,.05));
+    border: 2px solid rgba(255,255,255,.24);
+    border-top: none;
+    display: flex; flex-direction: column-reverse;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    box-shadow:
+      inset 0 6px 14px -8px rgba(255,255,255,.6),
+      inset -8px 0 14px -12px rgba(255,255,255,.7),
+      inset  8px 0 14px -12px rgba(255,255,255,.25),
+      0 8px 18px rgba(0,0,0,.35);
+    will-change: transform;
+  }
+  .tube::before {
+    content: "";
+    position: absolute; top: -4px; left: -3px; right: -3px;
+    height: 8px; border-radius: 8px;
+    background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,.08));
+    box-shadow: 0 1px 0 rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.5);
+  }
+  .tube::after {
+    content: "";
+    position: absolute; left: 6px; top: 8px; bottom: 20px;
+    width: 4px; border-radius: 3px;
+    background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,.05) 60%, rgba(255,255,255,0));
+    pointer-events: none;
+    opacity: .55;
+  }
+  .tube:active { transform: scale(.96); }
+  .tube.selected {
+    border-color: #7dd3fc;
+    box-shadow:
+      0 0 0 3px rgba(125,211,252,.28),
+      0 0 26px rgba(125,211,252,.6),
+      0 12px 26px rgba(0,0,0,.4),
+      inset 0 6px 14px -8px rgba(255,255,255,.7);
+    transform: translateY(-12px);
+  }
+  .tube.done {
+    border-color: rgba(74,222,128,.55);
+    box-shadow:
+      0 0 18px rgba(74,222,128,.45),
+      0 8px 18px rgba(0,0,0,.35),
+      inset 0 6px 14px -8px rgba(255,255,255,.7);
+  }
+  .tube.flying {
+    z-index: 100;
+    box-shadow:
+      0 26px 50px rgba(0,0,0,.55),
+      0 0 30px rgba(125,211,252,.35),
+      inset 0 6px 14px -8px rgba(255,255,255,.7);
+  }
+
+  .layer {
+    width: 100%;
+    height: calc(100% / 3);
+    flex: 0 0 auto;
+    border-radius: 3px;
+    transform-origin: bottom center;
+    position: relative;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.35),
+      inset 0 -2px 4px rgba(0,0,0,.25);
+  }
+  .layer:first-child {
+    border-bottom-left-radius: 22px;
+    border-bottom-right-radius: 22px;
+  }
+
+  /* ================== КНОПКИ ================== */
+  .controls {
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+  }
+  button {
+    font: inherit; font-size: 13.5px; font-weight: 700;
+    padding: 10px 16px; border-radius: 12px; border: none;
+    background: linear-gradient(180deg, #38bdf8, #0284c7);
+    color: #fff; cursor: pointer;
+    box-shadow:
+      0 3px 0 #075985,
+      0 8px 18px rgba(2,132,199,.35),
+      inset 0 1px 0 rgba(255,255,255,.4);
+    transition: transform .1s, box-shadow .1s, filter .15s, opacity .15s;
+    letter-spacing: .2px;
+  }
+  button:hover { filter: brightness(1.08); }
+  button:active { transform: translateY(2px); box-shadow: 0 1px 0 #075985, 0 4px 10px rgba(2,132,199,.3); }
+  button:disabled { opacity: .35; cursor: default; filter: none; transform: none; }
+  button.ghost {
+    background: linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.04));
+    color: #dbeafe;
+    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.2), 0 6px 16px rgba(0,0,0,.25);
+  }
+  button.ghost:active { transform: translateY(2px); }
+  button.mini { padding: 5px 11px; font-size: 13px; line-height: 1.2; min-width: 34px; }
+
+  .status {
+    margin-top: 16px; font-size: 14px; min-height: 22px;
+    opacity: .88; text-align: center; line-height: 1.4;
+  }
+  .status.win {
+    color: #4ade80; font-weight: 800; font-size: 17px;
+    animation: pop .5s cubic-bezier(.2,1.5,.4,1);
+    text-shadow: 0 0 18px rgba(74,222,128,.6);
+  }
+  @keyframes pop {
+    0% { transform: scale(.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  #nextBtn { margin-top: 14px; display: none; }
+
+  /* ================== МОДАЛКА ВЫБОРА УРОВНЯ ================== */
+  .modal {
+    position: fixed; inset: 0;
+    background: rgba(2,6,20,.7);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 10000;
+    padding: 16px;
+  }
+  .modal.show { display: flex; }
+  .modal-box {
+    background: linear-gradient(180deg, #1a2743, #0e1730);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 20px;
+    padding: 16px 16px 20px;
+    max-width: 480px; width: 100%;
+    max-height: 84vh; overflow-y: auto;
+    box-shadow: 0 30px 80px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.08);
+    animation: modalIn .28s cubic-bezier(.2,1.3,.4,1);
+  }
+  @keyframes modalIn {
+    from { transform: scale(.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .modal-head {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 16px; font-weight: 800; margin-bottom: 8px;
+    color: #e0f2fe;
+  }
+  .progress-bar {
+    height: 8px; border-radius: 5px;
+    background: rgba(255,255,255,.08);
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #22c55e, #4ade80);
+    border-radius: 5px;
+    width: 0%;
+    transition: width .35s ease;
+    box-shadow: 0 0 12px rgba(74,222,128,.6);
+  }
+  .progress-text {
+    font-size: 12px; opacity: .75; margin-bottom: 4px; text-align: right;
+  }
+  .levels-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .lvl-cell {
+    aspect-ratio: 1;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 15px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform .12s, box-shadow .12s, border-color .12s;
+    position: relative;
+    user-select: none;
+  }
+  .lvl-cell.locked {
+    background: rgba(255,255,255,.04);
+    color: rgba(255,255,255,.22);
+    cursor: not-allowed;
+  }
+  .lvl-cell.unlocked {
+    background: linear-gradient(180deg, #1e3a5f, #0f2440);
+    color: #7dd3fc;
+    border-color: rgba(125,211,252,.35);
+  }
+  .lvl-cell.completed {
+    background: linear-gradient(180deg, #166534, #052e16);
+    color: #86efac;
+    border-color: rgba(74,222,128,.5);
+  }
+  .lvl-cell.current {
+    box-shadow: 0 0 0 3px #7dd3fc, 0 0 22px rgba(125,211,252,.7);
+  }
+  .lvl-cell:not(.locked):hover { transform: scale(1.1); }
+  .lvl-cell .badge {
+    position: absolute; top: 3px; right: 5px; font-size: 10px;
+  }
+
+  /* ================== ТОСТ ================== */
+  .toast {
+    position: fixed; left: 50%; bottom: 28px;
+    transform: translateX(-50%) translateY(30px);
+    background: linear-gradient(180deg, #1e3a5f, #0f2440);
+    color: #7dd3fc;
+    font-weight: 700; font-size: 14px;
+    padding: 10px 18px; border-radius: 12px;
+    border: 1px solid rgba(125,211,252,.4);
+    box-shadow: 0 12px 32px rgba(0,0,0,.5), 0 0 22px rgba(125,211,252,.35);
+    opacity: 0; pointer-events: none;
+    transition: opacity .28s, transform .28s;
+    z-index: 20000;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<h1>🧪 Мини-колбы</h1>
+<div class="sub">
+  Тапни колбу, потом — другую. Верхний цвет пересыпается, если там
+  такой же цвет или пусто. Цель — в каждой колбе один цвет.
+</div>
+
+<div class="hud">
+  <button class="ghost mini" id="prevBtn" title="Предыдущий уровень">◀</button>
+  <span>Ур. <b id="levelNum">1 / 50</b></span>
+  <span class="sep">·</span>
+  <span>Ходы <b id="movesNum">0</b></span>
+  <button class="ghost mini" id="nextLvlBtn" title="Следующий уровень">▶</button>
+  <button class="ghost mini" id="levelsBtn" title="Все уровни">☰</button>
+</div>
+
+<div class="board" id="board"></div>
+
+<div class="controls">
+  <button class="ghost" id="undoBtn">↩ Отменить</button>
+  <button id="restartBtn">🔄 Заново</button>
+</div>
+
+<div class="status" id="status"></div>
+<button id="nextBtn">Следующий уровень →</button>
+
+<!-- ============ МОДАЛКА ВЫБОРА УРОВНЯ ============ -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>📋 Выбор уровня</div>
+      <button class="ghost mini" id="closeModal">✕</button>
+    </div>
+    <div class="progress-text" id="progressText">Пройдено 0 из 50</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="levels-grid" id="levelsGrid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   ЦВЕТА (с градиентами для объёма)
+============================================================ */
+const COLORS = {
+  R: { g: 'linear-gradient(180deg, #ff7a7a, #dc2626)' },
+  G: { g: 'linear-gradient(180deg, #62e08b, #16a34a)' },
+  B: { g: 'linear-gradient(180deg, #74aaff, #2563eb)' },
+  Y: { g: 'linear-gradient(180deg, #fde047, #ca8a04)' },
+  P: { g: 'linear-gradient(180deg, #c996ff, #9333ea)' },
+  O: { g: 'linear-gradient(180deg, #fdae5a, #ea580c)' },
+};
+const COLOR_HEX = { R:'#ef4444', G:'#22c55e', B:'#3b82f6', Y:'#eab308', P:'#a855f7', O:'#f97316' };
+const COLOR_KEYS = Object.keys(COLORS);
+const TUBE_SIZE = 3;
+
+/* ============================================================
+   50 РАЗНООБРАЗНЫХ УРОВНЕЙ
+   colors: 2–6, empty: 2–3 (разные комбинации, палитра ротируется)
+============================================================ */
+const LEVELS = [
+  // 1–5 · знакомство (2–3 цвета)
+  { colors: 2, empty: 2 },
+  { colors: 2, empty: 2 },
+  { colors: 3, empty: 2 },
+  { colors: 3, empty: 2 },
+  { colors: 3, empty: 3 },   // посвободнее
+
+  // 6–12 · три цвета с перебоями
+  { colors: 3, empty: 2 },
+  { colors: 3, empty: 2 },
+  { colors: 4, empty: 2 },
+  { colors: 4, empty: 2 },
+  { colors: 4, empty: 3 },   // передышка
+  { colors: 4, empty: 2 },
+  { colors: 4, empty: 2 },
+
+  // 13–20 · четыре–пять цветов
+  { colors: 5, empty: 2 },
+  { colors: 5, empty: 2 },
+  { colors: 5, empty: 3 },   // посвободнее
+  { colors: 5, empty: 2 },
+  { colors: 4, empty: 2 },   // лёгкая передышка
+  { colors: 5, empty: 2 },
+  { colors: 5, empty: 2 },
+  { colors: 5, empty: 2 },
+
+  // 21–30 · пять–шесть цветов
+  { colors: 6, empty: 2 },
+  { colors: 5, empty: 2 },   // передышка
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 3 },   // бонус
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 },
+  { colors: 5, empty: 2 },   // передышка
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 },
+
+  // 31–40 · челлендж
+  { colors: 6, empty: 3 },   // передышка
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 },
+  { colors: 5, empty: 2 },   // смена ритма
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 3 },   // бонус
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 },
+
+  // 41–50 · финал
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 },
+  { colors: 5, empty: 2 },   // передышка
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 3 },   // бонус
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 },
+  { colors: 6, empty: 2 },
+];
+
+/* ============================================================
+   ПРОГРЕСС (localStorage)
+============================================================ */
+const STORAGE_KEY = 'miniTubes_v1';
+let progress = {
+  unlocked: 0,     // самый высокий открытый индекс (0-based)
+  completed: {},   // { "0": true, "1": true }
+  records: {},     // { "0": 7, "1": 12 }
+};
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) progress = Object.assign(progress, JSON.parse(raw));
+  } catch (e) {}
+}
+function saveProgress() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch (e) {}
+}
+
+/* ============================================================
+   СОСТОЯНИЕ
+============================================================ */
+let level = 0;
+let tubes = [];
+let history = [];
+let selected = null;
+let moves = 0;
+let busy = false;
+let won = false;
+
+const boardEl    = document.getElementById('board');
+const statusEl   = document.getElementById('status');
+const levelEl    = document.getElementById('levelNum');
+const movesEl    = document.getElementById('movesNum');
+const nextBtn    = document.getElementById('nextBtn');
+const undoBtn    = document.getElementById('undoBtn');
+const prevBtn    = document.getElementById('prevBtn');
+const nextLvlBtn = document.getElementById('nextLvlBtn');
+const levelsBtn  = document.getElementById('levelsBtn');
+const modal      = document.getElementById('modal');
+const levelsGrid = document.getElementById('levelsGrid');
+const closeModal = document.getElementById('closeModal');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const toastEl    = document.getElementById('toast');
+
+/* ============================================================
+   ГЕНЕРАЦИЯ УРОВНЯ
+============================================================ */
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = (Math.random() * (i + 1)) | 0;
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* Ротация палитры: каждый уровень — свежий набор цветов */
+function paletteFor(index, count) {
+  const offset = (index * 2) % COLOR_KEYS.length;
+  const rotated = [];
+  for (let i = 0; i < COLOR_KEYS.length; i++) {
+    rotated.push(COLOR_KEYS[(offset + i) % COLOR_KEYS.length]);
+  }
+  return rotated.slice(0, count);
+}
+
+function buildLevel(index) {
+  const cfg = LEVELS[index];
+  const keys = paletteFor(index, cfg.colors);
+
+  for (let attempt = 0; attempt < 60; attempt++) {
+    const pool = [];
+    keys.forEach(k => { for (let i = 0; i < TUBE_SIZE; i++) pool.push(k); });
+    shuffle(pool);
+
+    const res = [];
+    for (let i = 0; i < cfg.colors; i++) res.push(pool.slice(i * TUBE_SIZE, (i + 1) * TUBE_SIZE));
+    for (let i = 0; i < cfg.empty; i++) res.push([]);
+
+    const ready = res.some(t => t.length === TUBE_SIZE && t.every(c => c === t[0]));
+    if (ready) continue;
+
+    // «Скучный» старт — когда все одинаковые цвета идут подряд в одной колбе.
+    // Проверяем разнообразие: в каждой колбе минимум 2 разных цвета.
+    const diverse = res.every(t => t.length === 0 || new Set(t).size >= 2);
+    if (!diverse) continue;
+
+    return res;
+  }
+  // фолбэк
+  const res = [];
+  for (let i = 0; i < cfg.colors; i++) res.push([keys[i], keys[(i+1)%keys.length], keys[i]]);
+  for (let i = 0; i < cfg.empty; i++) res.push([]);
+  return res;
+}
+
+/* ============================================================
+   ХЕЛПЕРЫ
+============================================================ */
+const isDone   = t => t.length === TUBE_SIZE && t.every(c => c === t[0]);
+const topColor = t => t[t.length - 1];
+function countTopSame(t) {
+  if (!t.length) return 0;
+  const c = topColor(t);
+  let n = 0;
+  for (let i = t.length - 1; i >= 0 && t[i] === c; i--) n++;
+  return n;
+}
+function canPour(from, to) {
+  if (from === to) return false;
+  const f = tubes[from], t = tubes[to];
+  if (!f.length || t.length >= TUBE_SIZE) return false;
+  if (!t.length) return true;
+  return topColor(f) === topColor(t);
+}
+function pourData(from, to) {
+  const amount = Math.min(countTopSame(tubes[from]), TUBE_SIZE - tubes[to].length);
+  for (let i = 0; i < amount; i++) tubes[to].push(tubes[from].pop());
+}
+
+/* ============================================================
+   РЕНДЕР
+============================================================ */
+function render() {
+  boardEl.innerHTML = '';
+  tubes.forEach((tube, idx) => {
+    const el = document.createElement('div');
+    el.className = 'tube';
+    if (selected === idx) el.classList.add('selected');
+    if (isDone(tube)) el.classList.add('done');
+
+    tube.forEach(c => {
+      const layer = document.createElement('div');
+      layer.className = 'layer';
+      layer.style.background = COLORS[c].g;
+      el.appendChild(layer);
+    });
+
+    el.addEventListener('click', () => onTubeClick(idx));
+    boardEl.appendChild(el);
+  });
+
+  undoBtn.disabled = busy || history.length === 0;
+  prevBtn.disabled = busy || level === 0;
+  nextLvlBtn.disabled = busy || level >= progress.unlocked || level >= LEVELS.length - 1;
+}
+
+/* ============================================================
+   КЛИК
+============================================================ */
+function onTubeClick(idx) {
+  if (busy || won) return;
+
+  if (selected === null) {
+    if (!tubes[idx].length || isDone(tubes[idx])) return;
+    selected = idx;
+    render();
+    return;
+  }
+  if (selected === idx) {
+    selected = null;
+    render();
+    return;
+  }
+  if (canPour(selected, idx)) {
+    const from = selected;
+    selected = null;
+    render();
+    doPour(from, idx);
+  } else {
+    selected = (!tubes[idx].length || isDone(tubes[idx])) ? null : idx;
+    render();
+  }
+}
+
+/* ============================================================
+   АНИМАЦИЯ ПЕРЕЛИВА: колба летит, наклоняется, пересыпает
+============================================================ */
+async function doPour(from, to) {
+  busy = true;
+  render(); // блокируем кнопки
+
+  const amount   = Math.min(countTopSame(tubes[from]), TUBE_SIZE - tubes[to].length);
+  const colorKey = topColor(tubes[from]);
+  const colorHex = COLOR_HEX[colorKey];
+  const toCount  = tubes[to].length;
+
+  history.push({ state: tubes.map(t => t.slice()), moves });
+
+  const fromEl = boardEl.children[from];
+  const toEl   = boardEl.children[to];
+  const fromRect = fromEl.getBoundingClientRect();
+  const toRect   = toEl.getBoundingClientRect();
+
+  const w = fromRect.width;
+  const h = fromRect.height;
+  const cx = fromRect.left + w / 2;
+  const cy = fromRect.top  + h / 2;
+
+  const toRight = (toRect.left + toRect.width / 2) > cx;
+  const angle = toRight ? 60 : -60;
+  const rad = angle * Math.PI / 180;
+
+  const mouthOffX = Math.sin(rad) * h / 2;
+  const mouthOffY = -Math.cos(rad) * h / 2;
+
+  const targetMouthX = toRect.left + toRect.width / 2;
+  const targetMouthY = toRect.top - 6;
+
+  const newCx = targetMouthX - mouthOffX;
+  const newCy = targetMouthY - mouthOffY;
+  const dx = newCx - cx;
+  const dy = newCy - cy;
+
+  fromEl.classList.add('flying');
+
+  /* 1) подъём */
+  await fromEl.animate(
+    [
+      { transform: 'translate(0,0) rotate(0deg)' },
+      { transform: 'translate(0,-26px) rotate(0deg)' },
+    ],
+    { duration: 170, easing: 'ease-out', fill: 'forwards' }
+  ).finished;
+
+  /* 2) полёт + наклон */
+  await fromEl.animate(
+    [
+      { transform: `translate(0,-26px) rotate(0deg)` },
+      { transform: `translate(${dx}px, ${dy + 26}px) rotate(${angle}deg)` },
+    ],
+    { duration: 460, easing: 'cubic-bezier(.45,0,.2,1)', fill: 'forwards' }
+  ).finished;
+
+  /* 3) струя */
+  const streamTop    = targetMouthY + 2;
+  const streamBottom = toRect.top + toRect.height * 0.62;
+  const streamHeight = Math.max(18, streamBottom - streamTop);
+
+  const stream = document.createElement('div');
+  Object.assign(stream.style, {
+    position: 'fixed',
+    left: (targetMouthX - 3) + 'px',
+    top:  streamTop + 'px',
+    width: '6px',
+    height: '0px',
+    background: `linear-gradient(180deg, ${colorHex}, ${colorHex}cc)`,
+    borderRadius: '4px',
+    zIndex: 9998,
+    pointerEvents: 'none',
+    boxShadow: `0 0 14px ${colorHex}, 0 0 4px ${colorHex}`,
+    filter: 'brightness(1.08)',
+  });
+  document.body.appendChild(stream);
+
+  await stream.animate(
+    [
+      { height: '0px',                    opacity: 0 },
+      { height: streamHeight * 0.6 + 'px', opacity: 1, offset: 0.55 },
+      { height: streamHeight + 'px',       opacity: 1 },
+    ],
+    { duration: 220, easing: 'ease-out', fill: 'forwards' }
+  ).finished;
+
+  /* 4) слои источника исчезают, в цели появляются */
+  const srcLayers = fromEl.querySelectorAll('.layer');
+  for (let i = 0; i < amount; i++) {
+    const l = srcLayers[srcLayers.length - 1 - i];
+    if (!l) continue;
+    l.animate(
+      [
+        { opacity: 1, transform: 'scaleY(1)' },
+        { opacity: 0, transform: 'scaleY(0.35)' },
+      ],
+      { duration: 200, delay: i * 70, easing: 'ease-in', fill: 'forwards' }
+    );
+  }
+
+  for (let i = 0; i < amount; i++) {
+    const layer = document.createElement('div');
+    layer.className = 'layer';
+    layer.style.background = COLORS[colorKey].g;
+    layer.style.opacity = '0';
+    toEl.appendChild(layer);
+    layer.animate(
+      [
+        { opacity: 0, transform: 'scaleY(0.5)' },
+        { opacity: 1, transform: 'scaleY(1)' },
+      ],
+      { duration: 200, delay: i * 70, easing: 'ease-out', fill: 'forwards' }
+    );
+  }
+
+  await new Promise(r => setTimeout(r, 340));
+
+  /* 5) струя исчезает */
+  stream.animate(
+    [
+      { height: streamHeight + 'px', opacity: 1 },
+      { height: '0px',               opacity: .6 },
+    ],
+    { duration: 200, easing: 'ease-in', fill: 'forwards' }
+  );
+  await new Promise(r => setTimeout(r, 200));
+  stream.remove();
+
+  /* 6) возврат */
+  await fromEl.animate(
+    [
+      { transform: `translate(${dx}px, ${dy}px) rotate(${angle}deg)` },
+      { transform: `translate(0,-22px) rotate(0deg)`, offset: 0.7 },
+      { transform: `translate(0,0) rotate(0deg)` },
+    ],
+    { duration: 520, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' }
+  ).finished;
+
+  /* финальный снап */
+  pourData(from, to);
+  moves++;
+  movesEl.textContent = moves;
+
+  fromEl.classList.remove('flying');
+  fromEl.getAnimations().forEach(a => a.cancel());
+  toEl.getAnimations().forEach(a => a.cancel());
+
+  busy = false;
+  render();
+  checkWin();
+}
+
+/* ============================================================
+   ПОБЕДА / РАЗБЛОКИРОВКА / ПРОГРЕСС
+============================================================ */
+function checkWin() {
+  const ok = tubes.every(t => t.length === 0 || isDone(t));
+  if (!ok) return;
+
+  won = true;
+
+  // Прогресс
+  const isNewRecord = !progress.records[level] || moves < progress.records[level];
+  if (isNewRecord) progress.records[level] = moves;
+  progress.completed[level] = true;
+
+  // Разблокировка следующего
+  let unlockedSomething = false;
+  if (level === progress.unlocked && level < LEVELS.length - 1) {
+    progress.unlocked = level + 1;
+    unlockedSomething = true;
+  }
+  saveProgress();
+
+  // Показать победу
+  statusEl.className = 'status win';
+  const isLast = level === LEVELS.length - 1;
+  if (isLast) {
+    statusEl.textContent = `🏆 ФИНАЛ! Все 50 уровней пройдены!`;
+    nextBtn.style.display = 'none';
+  } else {
+    const recText = isNewRecord ? ' 🏅 Новый рекорд!' : '';
+    statusEl.textContent = `🎉 Пройдено за ${moves} ход(ов)!${recText}`;
+    nextBtn.style.display = 'inline-block';
+  }
+
+  if (unlockedSomething) {
+    setTimeout(() => showToast(`🔓 Уровень ${level + 2} открыт!`), 300);
+  }
+}
+
+/* ============================================================
+   СТАРТ / УПРАВЛЕНИЕ
+============================================================ */
+function startLevel(index) {
+  // Нельзя открыть заблокированный уровень
+  if (index < 0 || index >= LEVELS.length) return;
+  if (index > progress.unlocked) {
+    showToast('🔒 Уровень закрыт. Пройди предыдущие!');
+    return;
+  }
+
+  level = index;
+  tubes = buildLevel(level);
+  history = [];
+  selected = null;
+  moves = 0;
+  busy = false;
+  won = false;
+
+  levelEl.textContent = (level + 1) + ' / ' + LEVELS.length;
+  movesEl.textContent = '0';
+  statusEl.className = 'status';
+  statusEl.textContent = '';
+  nextBtn.style.display = 'none';
+
+  render();
+}
+
+function undo() {
+  if (busy || !history.length) return;
+  const prev = history.pop();
+  tubes = prev.state.map(t => t.slice());
+  moves = prev.moves;
+  movesEl.textContent = moves;
+  selected = null;
+  won = false;
+  statusEl.className = 'status';
+  statusEl.textContent = '';
+  nextBtn.style.display = 'none';
+  render();
+}
+
+/* ============================================================
+   МОДАЛКА ВЫБОРА УРОВНЯ
+============================================================ */
+function renderLevelGrid() {
+  levelsGrid.innerHTML = '';
+  LEVELS.forEach((_, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'lvl-cell';
+    cell.textContent = i + 1;
+
+    const completed = !!progress.completed[i];
+    const unlocked  = i <= progress.unlocked;
+    const current   = i === level;
+
+    if (completed) cell.classList.add('completed');
+    else if (unlocked) cell.classList.add('unlocked');
+    else cell.classList.add('locked');
+
+    if (current) cell.classList.add('current');
+
+    if (completed) {
+      const b = document.createElement('div');
+      b.className = 'badge';
+      b.textContent = '✓';
+      cell.appendChild(b);
+    } else if (!unlocked) {
+      const b = document.createElement('div');
+      b.className = 'badge';
+      b.textContent = '🔒';
+      cell.appendChild(b);
+    }
+
+    cell.addEventListener('click', () => {
+      if (!unlocked) {
+        showToast('🔒 Сначала пройди предыдущие');
+        return;
+      }
+      closeModalFn();
+      startLevel(i);
+    });
+
+    levelsGrid.appendChild(cell);
+  });
+
+  const done = Object.keys(progress.completed).length;
+  progressText.textContent = `Пройдено ${done} из ${LEVELS.length}`;
+  progressFill.style.width = (done / LEVELS.length * 100) + '%';
+}
+
+function openModalFn() {
+  renderLevelGrid();
+  modal.classList.add('show');
+}
+function closeModalFn() {
+  modal.classList.remove('show');
+}
+
+/* ============================================================
+   ТОСТ
+============================================================ */
+let toastTimer = null;
+function showToast(text) {
+  toastEl.textContent = text;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2000);
+}
+
+/* ============================================================
+   КНОПКИ
+============================================================ */
+undoBtn.addEventListener('click', undo);
+document.getElementById('restartBtn').addEventListener('click', () => { if (!busy) startLevel(level); });
+nextBtn.addEventListener('click',    () => { if (!busy) startLevel(level + 1); });
+prevBtn.addEventListener('click',    () => { if (!busy) startLevel(level - 1); });
+nextLvlBtn.addEventListener('click', () => { if (!busy) startLevel(level + 1); });
+levelsBtn.addEventListener('click',  () => { if (!busy) openModalFn(); });
+closeModal.addEventListener('click', closeModalFn);
+modal.addEventListener('click', (e) => { if (e.target === modal) closeModalFn(); });
+
+// Esc закрывает модалку
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModalFn();
+});
+
+/* ============================================================
+   СТАРТ
+============================================================ */
+loadProgress();
+startLevel(progress.unlocked);
+</script>
+</body>
+</html>
