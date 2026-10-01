@@ -2,44 +2,126 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0b1120">
-<title>Мини-колбы — 50 уровней</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<title>Мини-колбы — 150 уровней</title>
 
 <!-- VK Bridge -->
 <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
 
 <style>
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
 
   :root {
     --tube-w: 60px;
     --tube-h: 180px;
     --gap: 12px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
   }
-  @media (max-width: 720px) { :root { --tube-w: 52px; --tube-h: 156px; --gap: 10px; } }
-  @media (max-width: 520px) { :root { --tube-w: 42px; --tube-h: 128px; --gap: 8px;  } }
-  @media (max-width: 400px) { :root { --tube-w: 36px; --tube-h: 112px; --gap: 6px;  } }
+
+  @media (max-width: 900px)  { :root { --tube-w: 56px; --tube-h: 168px; --gap: 11px; } }
+  @media (max-width: 720px)  { :root { --tube-w: 50px; --tube-h: 150px; --gap: 10px; } }
+  @media (max-width: 560px)  { :root { --tube-w: 44px; --tube-h: 132px; --gap: 9px;  } }
+  @media (max-width: 480px)  { :root { --tube-w: 40px; --tube-h: 120px; --gap: 8px;  } }
+  @media (max-width: 400px)  { :root { --tube-w: 36px; --tube-h: 108px; --gap: 7px;  } }
+  @media (max-width: 350px)  { :root { --tube-w: 32px; --tube-h: 96px;  --gap: 6px;  } }
+
+  @media (max-height: 500px) and (orientation: landscape) {
+    :root { --tube-w: 40px; --tube-h: 120px; --gap: 7px; }
+    body { padding-top: 6px; }
+    h1 { font-size: 16px; margin: 0; }
+    .sub { display: none; }
+    .board { gap: 14px var(--gap); margin-bottom: 8px; padding: 4px 0; min-height: 140px; }
+  }
 
   html, body { height: 100%; }
+  html { overscroll-behavior: none; -webkit-overflow-scrolling: touch; }
+
   body {
     margin: 0; min-height: 100vh;
+    min-height: 100dvh;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     color: #e6ecff;
-    background:
-      radial-gradient(1200px 800px at 50% -10%, #22345c 0%, #0f1a33 45%, #070b16 100%) fixed;
     display: flex; flex-direction: column; align-items: center;
-    padding: 14px 10px 44px;
-    user-select: none;
+    padding: calc(14px + var(--safe-top)) calc(10px + var(--safe-right)) calc(44px + var(--safe-bottom)) calc(10px + var(--safe-left));
     overflow-x: hidden;
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    transition: background 0.6s ease;
   }
+
   body::before {
     content: "";
     position: fixed; inset: 0; pointer-events: none;
     background-image:
       radial-gradient(circle at 20% 20%, rgba(125,211,252,.06), transparent 55%),
       radial-gradient(circle at 80% 70%, rgba(168,85,247,.06), transparent 55%);
+    transition: opacity 0.6s ease;
   }
+
+  /* ============ ФОНЫ ============ */
+  body.bg-default { background: radial-gradient(1200px 800px at 50% -10%, #22345c 0%, #0f1a33 45%, #070b16 100%) fixed; }
+  body.bg-cosmos {
+    background:
+      radial-gradient(1px 1px at 20% 30%, #fff, transparent),
+      radial-gradient(1px 1px at 60% 70%, #fff, transparent),
+      radial-gradient(1px 1px at 80% 20%, #fff, transparent),
+      radial-gradient(1px 1px at 40% 80%, #fff, transparent),
+      radial-gradient(1px 1px at 90% 50%, #fff, transparent),
+      radial-gradient(2px 2px at 15% 60%, #fff, transparent),
+      radial-gradient(1px 1px at 70% 40%, #fff, transparent),
+      radial-gradient(1500px 1000px at 50% -20%, #2a1b5c 0%, #0a0520 50%, #000 100%) fixed;
+  }
+  body.bg-sunset { background: linear-gradient(180deg, #1a0533 0%, #4a1e5c 35%, #b83a5e 65%, #ff8c42 100%) fixed; }
+  body.bg-forest {
+    background:
+      radial-gradient(800px 600px at 30% 0%, #1a4d2e 0%, transparent 60%),
+      radial-gradient(800px 600px at 70% 100%, #0d2818 0%, transparent 60%),
+      linear-gradient(180deg, #0a1f10 0%, #061208 100%) fixed;
+  }
+  body.bg-ocean { background: radial-gradient(1200px 800px at 50% 0%, #0c4a6e 0%, #082f49 45%, #020617 100%) fixed; }
+  body.bg-candy {
+    background:
+      radial-gradient(1000px 700px at 30% 20%, #831843 0%, transparent 60%),
+      radial-gradient(1000px 700px at 70% 80%, #6b21a8 0%, transparent 60%),
+      linear-gradient(180deg, #2d0a3e 0%, #1a0520 100%) fixed;
+  }
+  body.bg-gold { background: radial-gradient(1200px 800px at 50% -10%, #78350f 0%, #451a03 45%, #1c0a00 100%) fixed; }
+
+  #settingsBtn {
+    position: fixed;
+    top: calc(12px + var(--safe-top));
+    right: calc(12px + var(--safe-right));
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.05));
+    color: #e0f2fe;
+    font-size: 22px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid rgba(255,255,255,.2);
+    box-shadow: 0 6px 20px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.15);
+    cursor: pointer;
+    z-index: 9999;
+    padding: 0;
+    transition: transform .15s, background .15s;
+    touch-action: manipulation;
+  }
+  #settingsBtn:hover { transform: rotate(45deg) scale(1.05); }
+  #settingsBtn:active { transform: rotate(45deg) scale(.95); }
 
   h1 {
     font-size: 22px; margin: 2px 0 2px; letter-spacing: .5px;
@@ -47,6 +129,7 @@
     -webkit-background-clip: text; background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 2px 12px rgba(125,211,252,.35));
+    padding-right: 50px; text-align: center;
   }
   .sub {
     font-size: 12.5px; opacity: .72; margin-bottom: 12px;
@@ -56,15 +139,23 @@
 
   .hud {
     display: flex; align-items: center; gap: 8px;
-    font-size: 13.5px; margin-bottom: 14px;
+    font-size: 13.5px; margin-bottom: 10px;
     background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
     padding: 6px 10px; border-radius: 14px;
     border: 1px solid rgba(255,255,255,.1);
     box-shadow: 0 6px 22px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
     backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    flex-wrap: wrap; justify-content: center;
+    max-width: 100%;
   }
   .hud b { color: #7dd3fc; font-weight: 700; }
   .hud .sep { opacity: .35; }
+  .hud-coins {
+    background: linear-gradient(180deg, rgba(253,224,71,.12), rgba(253,224,71,.04));
+    border-color: rgba(253,224,71,.25);
+  }
+  .hud-coins b { color: #fde047; }
 
   .board {
     display: flex; flex-wrap: wrap; justify-content: center;
@@ -73,92 +164,261 @@
     max-width: 760px; width: 100%;
     margin-bottom: 18px;
     padding: 10px 0;
+    min-height: 200px;
+    touch-action: manipulation;
+    perspective: 800px;
   }
 
+  /* ============ РЕАЛИСТИЧНАЯ КОЛБА ============ */
   .tube {
     width: var(--tube-w);
     height: var(--tube-h);
-    border-radius: 6px 6px 30px 30px / 6px 6px 34px 34px;
-    padding: 6px 5px 8px;
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02) 55%, rgba(255,255,255,.06)),
-      linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,0) 30%, rgba(255,255,255,0) 70%, rgba(255,255,255,.05));
-    border: 2px solid rgba(255,255,255,.24);
-    border-top: none;
-    display: flex; flex-direction: column-reverse;
-    overflow: hidden;
-    cursor: pointer;
     position: relative;
-    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-    box-shadow:
-      inset 0 6px 14px -8px rgba(255,255,255,.6),
-      inset -8px 0 14px -12px rgba(255,255,255,.7),
-      inset  8px 0 14px -12px rgba(255,255,255,.25),
-      0 8px 18px rgba(0,0,0,.35);
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: transform .16s ease, filter .16s ease;
     will-change: transform;
+    touch-action: manipulation;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,.4));
   }
-  .tube::before {
-    content: "";
-    position: absolute; top: -4px; left: -3px; right: -3px;
-    height: 8px; border-radius: 8px;
-    background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,.08));
-    box-shadow: 0 1px 0 rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.5);
+
+  .tube-glass {
+    position: absolute;
+    inset: 0;
+    border-radius: 8px 8px 50% 50% / 8px 8px 22% 22%;
+    background:
+      linear-gradient(180deg,
+        rgba(255,255,255,.15) 0%,
+        rgba(255,255,255,.04) 3%,
+        rgba(255,255,255,.02) 20%,
+        rgba(255,255,255,.06) 60%,
+        rgba(255,255,255,.14) 90%,
+        rgba(255,255,255,.22) 100%),
+      linear-gradient(90deg,
+        rgba(255,255,255,.12) 0%,
+        rgba(255,255,255,.02) 8%,
+        rgba(255,255,255,0) 20%,
+        rgba(255,255,255,0) 80%,
+        rgba(255,255,255,.02) 92%,
+        rgba(255,255,255,.1) 100%);
+    border: 1.5px solid rgba(255,255,255,.35);
+    border-top: none;
+    box-shadow:
+      inset 0 8px 16px -10px rgba(255,255,255,.7),
+      inset -10px 0 18px -14px rgba(255,255,255,.8),
+      inset 10px 0 18px -14px rgba(0,0,0,.35),
+      inset 0 -12px 20px -12px rgba(0,0,0,.35);
+    overflow: hidden;
+    z-index: 1;
   }
-  .tube::after {
+
+  .tube-neck {
+    position: absolute;
+    top: -6px; left: -3px; right: -3px;
+    height: 12px;
+    border-radius: 50% 50% 6px 6px / 100% 100% 40% 40%;
+    background:
+      linear-gradient(180deg,
+        rgba(255,255,255,.55) 0%,
+        rgba(255,255,255,.2) 40%,
+        rgba(255,255,255,.08) 100%);
+    box-shadow:
+      inset 0 2px 3px rgba(255,255,255,.7),
+      inset 0 -3px 6px rgba(0,0,0,.3),
+      0 2px 4px rgba(0,0,0,.35);
+    z-index: 5;
+  }
+  .tube-neck::before {
     content: "";
-    position: absolute; left: 6px; top: 8px; bottom: 20px;
-    width: 4px; border-radius: 3px;
-    background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,.05) 60%, rgba(255,255,255,0));
+    position: absolute;
+    top: 1px; left: 15%; right: 15%;
+    height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 30%, rgba(0,0,0,.55), rgba(0,0,0,.85));
+    box-shadow: inset 0 1px 2px rgba(255,255,255,.3);
+  }
+
+  .tube-shine {
+    position: absolute;
+    left: 12%; top: 8%; bottom: 12%;
+    width: 8%;
+    border-radius: 50%;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,.75) 0%,
+      rgba(255,255,255,.35) 30%,
+      rgba(255,255,255,.1) 70%,
+      rgba(255,255,255,0) 100%);
+    filter: blur(0.8px);
     pointer-events: none;
-    opacity: .55;
+    z-index: 6;
   }
-  .tube:active { transform: scale(.96); }
-  .tube.selected {
-    border-color: #7dd3fc;
-    box-shadow:
-      0 0 0 3px rgba(125,211,252,.28),
-      0 0 26px rgba(125,211,252,.6),
-      0 12px 26px rgba(0,0,0,.4),
-      inset 0 6px 14px -8px rgba(255,255,255,.7);
-    transform: translateY(-12px);
+  .tube-shine-r {
+    position: absolute;
+    right: 10%; top: 15%; bottom: 25%;
+    width: 5%;
+    border-radius: 50%;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,.4) 0%,
+      rgba(255,255,255,.15) 50%,
+      rgba(255,255,255,0) 100%);
+    filter: blur(1px);
+    pointer-events: none;
+    z-index: 6;
   }
-  .tube.done {
-    border-color: rgba(74,222,128,.55);
-    box-shadow:
-      0 0 18px rgba(74,222,128,.45),
-      0 8px 18px rgba(0,0,0,.35),
-      inset 0 6px 14px -8px rgba(255,255,255,.7);
+  .tube-shadow-bottom {
+    position: absolute;
+    left: 15%; right: 15%; bottom: 2%;
+    height: 8%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 100%, rgba(0,0,0,.5), transparent 70%);
+    pointer-events: none;
+    z-index: 7;
   }
-  .tube.flying {
-    z-index: 100;
-    box-shadow:
-      0 26px 50px rgba(0,0,0,.55),
-      0 0 30px rgba(125,211,252,.35),
-      inset 0 6px 14px -8px rgba(255,255,255,.7);
+
+  .tube-liquid {
+    position: absolute;
+    left: 5%; right: 5%; bottom: 4%;
+    top: auto;
+    height: 0;
+    display: flex;
+    flex-direction: column-reverse;
+    z-index: 2;
+    overflow: hidden;
+    border-radius: 4px 4px 46% 46% / 4px 4px 20% 20%;
+    transition: height .3s ease;
   }
 
   .layer {
     width: 100%;
-    height: calc(100% / 3);
+    height: 33.333%;
     flex: 0 0 auto;
-    border-radius: 3px;
-    transform-origin: bottom center;
     position: relative;
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.35),
-      inset 0 -2px 4px rgba(0,0,0,.25);
+    transform-origin: bottom center;
+    overflow: visible;
   }
-  .layer:first-child {
-    border-bottom-left-radius: 22px;
-    border-bottom-right-radius: 22px;
+
+  .layer.top-layer::before {
+    content: "";
+    position: absolute;
+    left: -4%; right: -4%; top: -2px;
+    height: 5px;
+    border-radius: 50% 50% 40% 40% / 100% 100% 20% 20%;
+    background: inherit;
+    filter: brightness(1.25);
+    z-index: 3;
+    box-shadow: inset 0 -1px 1px rgba(0,0,0,.2);
+  }
+
+  .layer.top-layer::after {
+    content: "";
+    position: absolute;
+    left: 10%; right: 30%; top: -1px;
+    height: 2px;
+    border-radius: 50%;
+    background: linear-gradient(90deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,.8) 40%,
+      rgba(255,255,255,.95) 50%,
+      rgba(255,255,255,.6) 70%,
+      rgba(255,255,255,0) 100%);
+    filter: blur(0.5px);
+    z-index: 4;
+  }
+
+  .layer-depth {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg,
+        rgba(0,0,0,.25) 0%,
+        rgba(0,0,0,0) 15%,
+        rgba(0,0,0,0) 85%,
+        rgba(0,0,0,.3) 100%),
+      linear-gradient(180deg,
+        rgba(255,255,255,.1) 0%,
+        rgba(0,0,0,0) 30%,
+        rgba(0,0,0,0) 70%,
+        rgba(0,0,0,.15) 100%);
+  }
+
+  .layer-gloss {
+    position: absolute;
+    left: 8%; top: 20%; bottom: 20%;
+    width: 6%;
+    border-radius: 50%;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,.5) 0%,
+      rgba(255,255,255,.1) 60%,
+      rgba(255,255,255,0) 100%);
+    filter: blur(0.5px);
+    pointer-events: none;
+  }
+
+  .tube:active { transform: scale(.94); }
+  .tube.selected {
+    filter: drop-shadow(0 12px 24px rgba(0,0,0,.5)) drop-shadow(0 0 20px rgba(125,211,252,.7));
+    transform: translateY(-12px);
+  }
+  .tube.selected .tube-glass {
+    border-color: #7dd3fc;
+    box-shadow:
+      inset 0 8px 16px -10px rgba(255,255,255,.7),
+      inset -10px 0 18px -14px rgba(255,255,255,.8),
+      inset 10px 0 18px -14px rgba(0,0,0,.35),
+      inset 0 -12px 20px -12px rgba(0,0,0,.35),
+      0 0 0 3px rgba(125,211,252,.4);
+  }
+  .tube.done {
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,.4)) drop-shadow(0 0 14px rgba(74,222,128,.55));
+  }
+  .tube.done .tube-glass { border-color: rgba(74,222,128,.7); }
+  .tube.flying {
+    z-index: 100;
+    filter: drop-shadow(0 26px 50px rgba(0,0,0,.6)) drop-shadow(0 0 30px rgba(125,211,252,.5));
+  }
+
+  .tube.skin-neon .tube-glass {
+    border-color: rgba(125,211,252,.85);
+    box-shadow:
+      inset 0 8px 16px -10px rgba(255,255,255,.7),
+      inset -10px 0 18px -14px rgba(255,255,255,.8),
+      inset 10px 0 18px -14px rgba(0,0,0,.35),
+      inset 0 -12px 20px -12px rgba(0,0,0,.35),
+      0 0 22px rgba(125,211,252,.65);
+  }
+  .tube.skin-neon .tube-neck {
+    background: linear-gradient(180deg, rgba(125,211,252,.9), rgba(125,211,252,.3));
+    box-shadow:
+      inset 0 2px 3px rgba(255,255,255,.7),
+      0 0 14px rgba(125,211,252,.9);
+  }
+  .tube.skin-gold .tube-glass {
+    border-color: rgba(251,191,36,.85);
+    background:
+      linear-gradient(180deg, rgba(253,224,71,.15), rgba(251,191,36,.05) 55%, rgba(253,224,71,.12)),
+      linear-gradient(90deg, rgba(253,224,71,.12), rgba(255,255,255,0) 30%, rgba(255,255,255,0) 70%, rgba(253,224,71,.08));
+    box-shadow:
+      inset 0 8px 16px -10px rgba(255,255,255,.85),
+      inset -10px 0 18px -14px rgba(255,255,255,.9),
+      inset 10px 0 18px -14px rgba(0,0,0,.35),
+      0 0 24px rgba(251,191,36,.6);
+  }
+  .tube.skin-gold .tube-neck {
+    background: linear-gradient(180deg, rgba(253,224,71,.95), rgba(217,119,6,.5));
+    box-shadow: inset 0 2px 3px rgba(255,255,255,.8), 0 0 14px rgba(251,191,36,.9);
   }
 
   .controls {
-    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+    margin-top: 10px;
+    max-width: 100%;
   }
   button {
     font: inherit; font-size: 13.5px; font-weight: 700;
-    padding: 10px 16px; border-radius: 12px; border: none;
+    padding: 10px 14px; border-radius: 12px; border: none;
     background: linear-gradient(180deg, #38bdf8, #0284c7);
     color: #fff; cursor: pointer;
     box-shadow:
@@ -167,6 +427,9 @@
       inset 0 1px 0 rgba(255,255,255,.4);
     transition: transform .1s, box-shadow .1s, filter .15s, opacity .15s;
     letter-spacing: .2px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 40px;
   }
   button:hover { filter: brightness(1.08); }
   button:active { transform: translateY(2px); box-shadow: 0 1px 0 #075985, 0 4px 10px rgba(2,132,199,.3); }
@@ -177,11 +440,19 @@
     box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.2), 0 6px 16px rgba(0,0,0,.25);
   }
   button.ghost:active { transform: translateY(2px); }
-  button.mini { padding: 5px 11px; font-size: 13px; line-height: 1.2; min-width: 34px; }
+  button.mini { padding: 6px 11px; font-size: 13px; line-height: 1.2; min-width: 36px; min-height: 34px; }
+  .controls button span { color: #fde047; font-weight: 800; }
+
+  #shopBtn {
+    background: linear-gradient(180deg, #fbbf24, #d97706);
+    box-shadow: 0 3px 0 #92400e, 0 8px 18px rgba(217,119,6,.4), inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  #shopBtn:active { box-shadow: 0 1px 0 #92400e, 0 4px 10px rgba(217,119,6,.3); }
 
   .status {
     margin-top: 16px; font-size: 14px; min-height: 22px;
     opacity: .88; text-align: center; line-height: 1.4;
+    padding: 0 10px;
   }
   .status.win {
     color: #4ade80; font-weight: 800; font-size: 17px;
@@ -199,10 +470,12 @@
     position: fixed; inset: 0;
     background: rgba(2,6,20,.7);
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: none;
     align-items: center; justify-content: center;
     z-index: 10000;
-    padding: 16px;
+    padding: calc(16px + var(--safe-top)) calc(16px + var(--safe-right)) calc(16px + var(--safe-bottom)) calc(16px + var(--safe-left));
+    touch-action: manipulation;
   }
   .modal.show { display: flex; }
   .modal-box {
@@ -211,7 +484,10 @@
     border-radius: 20px;
     padding: 16px 16px 20px;
     max-width: 480px; width: 100%;
-    max-height: 84vh; overflow-y: auto;
+    max-height: calc(84vh - var(--safe-top) - var(--safe-bottom));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
     box-shadow: 0 30px 80px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.08);
     animation: modalIn .28s cubic-bezier(.2,1.3,.4,1);
   }
@@ -223,6 +499,11 @@
     display: flex; justify-content: space-between; align-items: center;
     font-size: 16px; font-weight: 800; margin-bottom: 8px;
     color: #e0f2fe;
+    position: sticky; top: -16px;
+    background: linear-gradient(180deg, #1a2743, #1a2743 70%, transparent);
+    padding: 8px 0 8px;
+    margin-top: -8px;
+    z-index: 2;
   }
   .progress-bar {
     height: 8px; border-radius: 5px;
@@ -238,13 +519,14 @@
     transition: width .35s ease;
     box-shadow: 0 0 12px rgba(74,222,128,.6);
   }
-  .progress-text {
-    font-size: 12px; opacity: .75; margin-bottom: 4px; text-align: right;
-  }
+  .progress-text { font-size: 12px; opacity: .75; margin-bottom: 4px; text-align: right; }
   .levels-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 8px;
+  }
+  @media (max-width: 380px) {
+    .levels-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
   }
   .lvl-cell {
     aspect-ratio: 1;
@@ -256,12 +538,10 @@
     transition: transform .12s, box-shadow .12s, border-color .12s;
     position: relative;
     user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
-  .lvl-cell.locked {
-    background: rgba(255,255,255,.04);
-    color: rgba(255,255,255,.22);
-    cursor: not-allowed;
-  }
+  .lvl-cell.locked { background: rgba(255,255,255,.04); color: rgba(255,255,255,.22); cursor: not-allowed; }
   .lvl-cell.unlocked {
     background: linear-gradient(180deg, #1e3a5f, #0f2440);
     color: #7dd3fc;
@@ -272,16 +552,171 @@
     color: #86efac;
     border-color: rgba(74,222,128,.5);
   }
-  .lvl-cell.current {
-    box-shadow: 0 0 0 3px #7dd3fc, 0 0 22px rgba(125,211,252,.7);
-  }
+  .lvl-cell.current { box-shadow: 0 0 0 3px #7dd3fc, 0 0 22px rgba(125,211,252,.7); }
   .lvl-cell:not(.locked):hover { transform: scale(1.1); }
-  .lvl-cell .badge {
-    position: absolute; top: 3px; right: 5px; font-size: 10px;
+  .lvl-cell:not(.locked):active { transform: scale(.94); }
+  .lvl-cell .badge { position: absolute; top: 3px; right: 5px; font-size: 10px; }
+
+  .shop-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .shop-tab {
+    flex: 1; padding: 10px 6px;
+    background: rgba(255,255,255,.05);
+    color: #cbd5e1; font-weight: 700; font-size: 12.5px;
+    border-radius: 12px; border: 1.5px solid transparent;
+    box-shadow: none;
+    min-width: 76px;
+    min-height: 40px;
+  }
+  .shop-tab.active {
+    background: linear-gradient(180deg, #38bdf8, #0284c7);
+    color: #fff;
+    box-shadow: 0 3px 0 #075985, inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  .shop-content { display: flex; flex-direction: column; gap: 10px; }
+  .shop-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 14px;
+    transition: transform .12s, border-color .12s;
+  }
+  .shop-item:hover { transform: translateY(-2px); border-color: rgba(125,211,252,.35); }
+  .shop-icon { font-size: 26px; flex: 0 0 40px; text-align: center; filter: drop-shadow(0 2px 6px rgba(0,0,0,.4)); }
+  .shop-info { flex: 1; min-width: 0; }
+  .shop-name { font-weight: 800; font-size: 14px; color: #e0f2fe; margin-bottom: 2px; }
+  .shop-desc { font-size: 11.5px; opacity: .7; line-height: 1.3; }
+  .shop-buy {
+    padding: 10px 14px; font-size: 12.5px; font-weight: 800;
+    border-radius: 10px; white-space: nowrap;
+    background: linear-gradient(180deg, #4ade80, #16a34a);
+    color: #052e16;
+    box-shadow: 0 3px 0 #14532d, 0 6px 14px rgba(22,163,74,.35), inset 0 1px 0 rgba(255,255,255,.4);
+    min-height: 40px;
+  }
+  .shop-buy:active { transform: translateY(2px); box-shadow: 0 1px 0 #14532d; }
+  .shop-buy:disabled {
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.35);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
+    cursor: not-allowed; transform: none;
+  }
+  .shop-buy.owned {
+    background: linear-gradient(180deg, #38bdf8, #0284c7);
+    color: #fff;
+    box-shadow: 0 3px 0 #075985, inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  .shop-buy.active-skin {
+    background: linear-gradient(180deg, #fbbf24, #d97706);
+    color: #451a03;
+    box-shadow: 0 3px 0 #92400e, inset 0 1px 0 rgba(255,255,255,.4);
   }
 
+  @keyframes adPulse {
+    0%, 100% { box-shadow: 0 3px 0 #4c1d95, 0 6px 14px rgba(124,58,237,.4), inset 0 1px 0 rgba(255,255,255,.4); }
+    50%      { box-shadow: 0 3px 0 #4c1d95, 0 6px 22px rgba(168,85,247,.85), inset 0 1px 0 rgba(255,255,255,.4); }
+  }
+  #adExtraBuy, #adCoinsBuy {
+    background: linear-gradient(180deg, #a78bfa, #7c3aed);
+    color: #fff;
+    animation: adPulse 2.2s ease-in-out infinite;
+  }
+
+  .bg-preview {
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    flex: 0 0 56px;
+    border: 2px solid rgba(255,255,255,.2);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 4px 12px rgba(0,0,0,.4);
+  }
+  @media (max-width: 400px) {
+    .bg-preview { width: 44px; height: 44px; flex: 0 0 44px; }
+  }
+  .bg-preview.bg-default { background: radial-gradient(circle at 50% 0%, #22345c, #0f1a33 45%, #070b16); }
+  .bg-preview.bg-cosmos {
+    background:
+      radial-gradient(1px 1px at 30% 30%, #fff, transparent),
+      radial-gradient(1px 1px at 70% 60%, #fff, transparent),
+      radial-gradient(120px 80px at 50% 0%, #2a1b5c, #0a0520 60%, #000);
+  }
+  .bg-preview.bg-sunset { background: linear-gradient(180deg, #1a0533, #4a1e5c 35%, #b83a5e 65%, #ff8c42); }
+  .bg-preview.bg-forest {
+    background:
+      radial-gradient(120px 80px at 30% 0%, #1a4d2e, transparent 60%),
+      linear-gradient(180deg, #0a1f10, #061208);
+  }
+  .bg-preview.bg-ocean { background: radial-gradient(circle at 50% 0%, #0c4a6e, #082f49 45%, #020617); }
+  .bg-preview.bg-candy {
+    background:
+      radial-gradient(80px 60px at 30% 30%, #831843, transparent 60%),
+      radial-gradient(80px 60px at 70% 70%, #6b21a8, transparent 60%),
+      linear-gradient(180deg, #2d0a3e, #1a0520);
+  }
+  .bg-preview.bg-gold { background: radial-gradient(circle at 50% 0%, #78350f, #451a03 45%, #1c0a00); }
+
+  .settings-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    gap: 10px;
+  }
+  .settings-label { font-weight: 700; font-size: 14px; color: #e0f2fe; }
+  .settings-sub { font-size: 11.5px; opacity: .65; margin-top: 2px; }
+  .toggle {
+    width: 54px; height: 30px;
+    border-radius: 15px;
+    background: rgba(255,255,255,.12);
+    position: relative;
+    cursor: pointer;
+    transition: background .2s;
+    border: none;
+    padding: 0;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,.4);
+    flex: 0 0 54px;
+    min-height: 30px;
+  }
+  .toggle::after {
+    content: "";
+    position: absolute; top: 3px; left: 3px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform .2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,.4);
+  }
+  .toggle.on { background: linear-gradient(180deg, #4ade80, #16a34a); }
+  .toggle.on::after { transform: translateX(24px); }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .stat-card {
+    padding: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 14px;
+    text-align: center;
+  }
+  .stat-value {
+    font-size: 22px; font-weight: 800; color: #7dd3fc;
+    line-height: 1.1; margin-bottom: 4px;
+  }
+  .stat-label {
+    font-size: 11px; opacity: .7;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .stat-card.gold .stat-value { color: #fde047; }
+  .stat-card.green .stat-value { color: #4ade80; }
+
   .toast {
-    position: fixed; left: 50%; bottom: 28px;
+    position: fixed; left: 50%;
+    bottom: calc(28px + var(--safe-bottom));
     transform: translateX(-50%) translateY(30px);
     background: linear-gradient(180deg, #1e3a5f, #0f2440);
     color: #7dd3fc;
@@ -292,14 +727,43 @@
     opacity: 0; pointer-events: none;
     transition: opacity .28s, transform .28s;
     z-index: 20000;
+    max-width: calc(100% - 32px);
+    text-align: center;
   }
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .modal-box::-webkit-scrollbar { width: 6px; }
+  .modal-box::-webkit-scrollbar-thumb { background: rgba(125,211,252,.3); border-radius: 3px; }
+  .modal-box::-webkit-scrollbar-track { background: transparent; }
+
+  /* ============ ЧАСТИЦЫ ============ */
+  .drop {
+    position: fixed;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    pointer-events: none;
+    z-index: 9997;
+    filter: brightness(1.15);
+  }
+  .splash {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9996;
+    filter: blur(0.5px);
+  }
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.8), rgba(255,255,255,.1) 60%, transparent 70%);
+    pointer-events: none;
+    z-index: 5;
+    opacity: .7;
   }
 </style>
 </head>
-<body>
+<body class="bg-default">
+
+<button id="settingsBtn" title="Настройки">⚙️</button>
 
 <h1>🧪 Мини-колбы</h1>
 <div class="sub">
@@ -309,17 +773,24 @@
 
 <div class="hud">
   <button class="ghost mini" id="prevBtn" title="Предыдущий уровень">◀</button>
-  <span>Ур. <b id="levelNum">1 / 50</b></span>
+  <span>Ур. <b id="levelNum">1 / 150</b></span>
   <span class="sep">·</span>
   <span>Ходы <b id="movesNum">0</b></span>
   <button class="ghost mini" id="nextLvlBtn" title="Следующий уровень">▶</button>
   <button class="ghost mini" id="levelsBtn" title="Все уровни">☰</button>
 </div>
 
+<div class="hud hud-coins">
+  <span>🪙 <b id="coinsNum">0</b></span>
+  <button class="mini" id="shopBtn" title="Магазин">🛒 Магазин</button>
+</div>
+
 <div class="board" id="board"></div>
 
 <div class="controls">
   <button class="ghost" id="undoBtn">↩ Отменить</button>
+  <button class="ghost" id="hintBtn">💡 Подсказка (<span id="hintCount">0</span>)</button>
+  <button class="ghost" id="shuffleBtn">🔀 Перемешать (<span id="shuffleCount">0</span>)</button>
   <button id="restartBtn">🔄 Заново</button>
 </div>
 
@@ -332,15 +803,392 @@
       <div>📋 Выбор уровня</div>
       <button class="ghost mini" id="closeModal">✕</button>
     </div>
-    <div class="progress-text" id="progressText">Пройдено 0 из 50</div>
+    <div class="progress-text" id="progressText">Пройдено 0 из 150</div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
     <div class="levels-grid" id="levelsGrid"></div>
+  </div>
+</div>
+
+<div class="modal" id="shopModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>🛒 Магазин</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:15px;">🪙 <b id="shopCoins" style="color:#fde047">0</b></span>
+        <button class="ghost mini" id="closeShop">✕</button>
+      </div>
+    </div>
+
+    <div class="shop-tabs">
+      <button class="shop-tab active" data-tab="boosts">🧩 Бусты</button>
+      <button class="shop-tab" data-tab="skins">🎨 Скины</button>
+      <button class="shop-tab" data-tab="backgrounds">🖼️ Фоны</button>
+    </div>
+
+    <div class="shop-content" id="shopBoosts">
+      <div class="shop-item">
+        <div class="shop-icon">📺</div>
+        <div class="shop-info">
+          <div class="shop-name">Колба за рекламу VK</div>
+          <div class="shop-desc">Посмотри рекламу ВКонтакте — получи +1 колбу</div>
+        </div>
+        <button class="shop-buy" id="adExtraBuy">📺 Смотреть</button>
+      </div>
+
+      <div class="shop-item">
+        <div class="shop-icon">🎬</div>
+        <div class="shop-info">
+          <div class="shop-name">50 монет за рекламу VK</div>
+          <div class="shop-desc">Посмотри рекламу ВКонтакте — получи +50 🪙</div>
+        </div>
+        <button class="shop-buy" id="adCoinsBuy">📺 Смотреть</button>
+      </div>
+
+      <div class="shop-item">
+        <div class="shop-icon">💡</div>
+        <div class="shop-info">
+          <div class="shop-name">Подсказка ×3</div>
+          <div class="shop-desc">Показывает возможный ход</div>
+        </div>
+        <button class="shop-buy" data-buy="hint" data-cost="50">50 🪙</button>
+      </div>
+
+      <div class="shop-item">
+        <div class="shop-icon">🔀</div>
+        <div class="shop-info">
+          <div class="shop-name">Перемешать ×3</div>
+          <div class="shop-desc">Перемешивает расклад уровня</div>
+        </div>
+        <button class="shop-buy" data-buy="shuffle" data-cost="75">75 🪙</button>
+      </div>
+
+      <div class="shop-item">
+        <div class="shop-icon">⏭️</div>
+        <div class="shop-info">
+          <div class="shop-name">Пропуск уровня</div>
+          <div class="shop-desc">Мгновенно открывает следующий уровень</div>
+        </div>
+        <button class="shop-buy" data-buy="skip" data-cost="200">200 🪙</button>
+      </div>
+    </div>
+
+    <div class="shop-content" id="shopSkins" style="display:none;">
+      <div class="shop-item">
+        <div class="shop-icon">🥃</div>
+        <div class="shop-info">
+          <div class="shop-name">Стекло</div>
+          <div class="shop-desc">Классический вид</div>
+        </div>
+        <button class="shop-buy" data-buy="skin-glass" data-cost="0" data-skin="glass">Активно</button>
+      </div>
+      <div class="shop-item">
+        <div class="shop-icon">💠</div>
+        <div class="shop-info">
+          <div class="shop-name">Неон</div>
+          <div class="shop-desc">Светящиеся границы колб</div>
+        </div>
+        <button class="shop-buy" data-buy="skin-neon" data-cost="150" data-skin="neon">150 🪙</button>
+      </div>
+      <div class="shop-item">
+        <div class="shop-icon">🏆</div>
+        <div class="shop-info">
+          <div class="shop-name">Золото</div>
+          <div class="shop-desc">Премиум-золотые колбы</div>
+        </div>
+        <button class="shop-buy" data-buy="skin-gold" data-cost="300" data-skin="gold">300 🪙</button>
+      </div>
+    </div>
+
+    <div class="shop-content" id="shopBackgrounds" style="display:none;">
+      <div class="shop-item">
+        <div class="bg-preview bg-default"></div>
+        <div class="shop-info"><div class="shop-name">Стандарт</div><div class="shop-desc">Синий градиент по умолчанию</div></div>
+        <button class="shop-buy" data-buy="bg-default" data-cost="0" data-bg="default">Активно</button>
+      </div>
+      <div class="shop-item">
+        <div class="bg-preview bg-cosmos"></div>
+        <div class="shop-info"><div class="shop-name">🌌 Космос</div><div class="shop-desc">Звёздное небо и туманность</div></div>
+        <button class="shop-buy" data-buy="bg-cosmos" data-cost="100" data-bg="cosmos">100 🪙</button>
+      </div>
+      <div class="shop-item">
+        <div class="bg-preview bg-sunset"></div>
+        <div class="shop-info"><div class="shop-name">🌅 Закат</div><div class="shop-desc">Тёплые краски вечернего неба</div></div>
+        <button class="shop-buy" data-buy="bg-sunset" data-cost="150" data-bg="sunset">150 🪙</button>
+      </div>
+      <div class="shop-item">
+        <div class="bg-preview bg-forest"></div>
+        <div class="shop-info"><div class="shop-name">🌲 Лес</div><div class="shop-desc">Тёмно-зелёная чаща</div></div>
+        <button class="shop-buy" data-buy="bg-forest" data-cost="150" data-bg="forest">150 🪙</button>
+      </div>
+      <div class="shop-item">
+        <div class="bg-preview bg-ocean"></div>
+        <div class="shop-info"><div class="shop-name">🌊 Океан</div><div class="shop-desc">Глубина морских вод</div></div>
+        <button class="shop-buy" data-buy="bg-ocean" data-cost="200" data-bg="ocean">200 🪙</button>
+      </div>
+      <div class="shop-item">
+        <div class="bg-preview bg-candy"></div>
+        <div class="shop-info"><div class="shop-name">🍭 Карамель</div><div class="shop-desc">Розово-фиолетовые тона</div></div>
+        <button class="shop-buy" data-buy="bg-candy" data-cost="250" data-bg="candy">250 🪙</button>
+      </div>
+      <div class="shop-item">
+        <div class="bg-preview bg-gold"></div>
+        <div class="shop-info"><div class="shop-name">👑 Золото</div><div class="shop-desc">Премиальный золотой фон</div></div>
+        <button class="shop-buy" data-buy="bg-gold" data-cost="400" data-bg="gold">400 🪙</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="settingsModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>⚙️ Настройки</div>
+      <button class="ghost mini" id="closeSettings">✕</button>
+    </div>
+    <div class="shop-tabs">
+      <button class="shop-tab active" data-tab="settingsTab">⚙️ Основное</button>
+      <button class="shop-tab" data-tab="statsTab">📊 Статистика</button>
+    </div>
+    <div id="settingsTabContent">
+      <div class="settings-row">
+        <div><div class="settings-label">🔊 Звук</div><div class="settings-sub">Звуки перелива, победы, покупок</div></div>
+        <button class="toggle" id="soundToggle"></button>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-label">📳 Вибрация</div><div class="settings-sub">Вибрировать при переливании (VK)</div></div>
+        <button class="toggle" id="vibrationToggle"></button>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-label">🎨 Скин колб</div><div class="settings-sub">Текущий: <span id="currentSkin">Стекло</span></div></div>
+        <button class="ghost mini" id="goToSkins">Сменить</button>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-label">🖼️ Фон</div><div class="settings-sub">Текущий: <span id="currentBg">Стандарт</span></div></div>
+        <button class="ghost mini" id="goToBackgrounds">Сменить</button>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-label">🔄 Сбросить прогресс</div><div class="settings-sub">Все уровни, монеты и покупки будут удалены</div></div>
+        <button class="ghost mini" id="resetProgress" style="background: linear-gradient(180deg, #f87171, #dc2626); color: #fff;">Сброс</button>
+      </div>
+      <div style="text-align:center; font-size:11px; opacity:.5; margin-top:14px;">Мини-колбы VK · 150 уровней</div>
+    </div>
+    <div id="statsTabContent" style="display:none;">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-value" id="statCompleted">0</div><div class="stat-label">Пройдено</div></div>
+        <div class="stat-card green"><div class="stat-value" id="statUnlocked">1</div><div class="stat-label">Доступно</div></div>
+        <div class="stat-card gold"><div class="stat-value" id="statCoins">0</div><div class="stat-label">Монет</div></div>
+        <div class="stat-card"><div class="stat-value" id="statMoves">0</div><div class="stat-label">Всего ходов</div></div>
+        <div class="stat-card green"><div class="stat-value" id="statBest">—</div><div class="stat-label">Лучший рекорд</div></div>
+        <div class="stat-card"><div class="stat-value" id="statProgress">0%</div><div class="stat-label">Прогресс</div></div>
+      </div>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
+/* ============================================================
+   МОБИЛЬНАЯ ОПТИМИЗАЦИЯ
+============================================================ */
+let lastTouchEnd = 0;
+document.addEventListener('touchend', (e) => {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) e.preventDefault();
+  lastTouchEnd = now;
+}, { passive: false });
+
+document.addEventListener('gesturestart', (e) => e.preventDefault());
+document.addEventListener('gesturechange', (e) => e.preventDefault());
+document.addEventListener('gestureend', (e) => e.preventDefault());
+
+document.addEventListener('contextmenu', (e) => {
+  if (e.target.closest('.tube, button, .lvl-cell')) e.preventDefault();
+});
+
+/* ============================================================
+   VK BRIDGE — ГЛОБАЛЬНЫЕ ФУНКЦИИ
+============================================================ */
+let vkAvailable = false;
+let vibrationEnabled = true;
+
+// Инициализация VK
+async function initVK() {
+  if (typeof vkBridge === 'undefined') {
+    console.log('⚠️ VK Bridge не загружен (не в VK)');
+    return false;
+  }
+  try {
+    await vkBridge.send('VKWebAppInit');
+    vkAvailable = true;
+    console.log('✅ VK Bridge инициализирован');
+
+    // Красим хедер ВК под фон игры
+    vkBridge.send('VKWebAppSetViewSettings', {
+      status_bar_style: 'light',
+      action_bar_color: '#0b1120',
+      navigation_bar_color: '#0b1120'
+    }).catch(() => {});
+
+    // Сообщаем VK что игра готова
+    vkBridge.send('VKWebAppSetLocation', { location: 'main' }).catch(() => {});
+
+    return true;
+  } catch (err) {
+    console.error('❌ Ошибка VK Bridge:', err);
+    return false;
+  }
+}
+
+// Показ рекламы VK с наградой
+async function showVKRewardedAd() {
+  if (!vkAvailable) {
+    return { ok: false, reason: 'not_vk' };
+  }
+
+  try {
+    const data = await vkBridge.send('VKWebAppShowNativeAds', {
+      ad_format: 'reward'
+    });
+
+    if (data && data.result) {
+      return { ok: true };
+    } else {
+      return { ok: false, reason: 'not_watched' };
+    }
+  } catch (err) {
+    console.warn('Ошибка рекламы VK:', err);
+    // Пользователь закрыл рекламу или ошибка
+    return { ok: false, reason: 'error' };
+  }
+}
+
+// Вибрация (VK Taptic)
+function vibrate(type = 'light') {
+  if (!vibrationEnabled || !vkAvailable) return;
+  const types = {
+    light: 'VKWebAppTapticImpactOccurred',
+    medium: 'VKWebAppTapticNotificationOccurred',
+    heavy: 'VKWebAppTapticNotificationOccurred'
+  };
+
+  if (type === 'light') {
+    vkBridge.send('VKWebAppTapticImpactOccurred', { style: 'light' }).catch(() => {});
+  } else if (type === 'success') {
+    vkBridge.send('VKWebAppTapticNotificationOccurred', { type: 'success' }).catch(() => {});
+  } else if (type === 'error') {
+    vkBridge.send('VKWebAppTapticNotificationOccurred', { type: 'error' }).catch(() => {});
+  } else if (type === 'warning') {
+    vkBridge.send('VKWebAppTapticNotificationOccurred', { type: 'warning' }).catch(() => {});
+  }
+}
+
+// VK Storage — загрузка
+async function vkStorageGet(key) {
+  if (!vkAvailable) return null;
+  try {
+    const data = await vkBridge.send('VKWebAppStorageGet', { keys: [key] });
+    const item = data.keys && data.keys[0];
+    if (item && item.value) {
+      return JSON.parse(item.value);
+    }
+    return null;
+  } catch (err) {
+    return null;
+  }
+}
+
+// VK Storage — сохранение
+async function vkStorageSet(key, value) {
+  if (!vkAvailable) return false;
+  try {
+    await vkBridge.send('VKWebAppStorageSet', {
+      key: key,
+      value: JSON.stringify(value)
+    });
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+// VK «Поделиться»
+async function vkShare() {
+  if (!vkAvailable) return;
+  try {
+    await vkBridge.send('VKWebAppShare', {
+      link: 'https://vk.com/app0000000' // ← замени на ID своего приложения
+    });
+  } catch (err) {
+    showToast('Не удалось поделиться');
+  }
+}
+
+/* ============================================================
+   ЗВУКИ
+============================================================ */
+let audioCtx = null;
+let soundEnabled = true;
+
+function initAudio() {
+  if (audioCtx) return;
+  try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+}
+
+function playTone(freq, duration, type = 'sine', volume = 0.15, delay = 0) {
+  if (!soundEnabled || !audioCtx) return;
+  const now = audioCtx.currentTime + delay;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, now);
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(volume, now + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(now); osc.stop(now + duration);
+}
+
+function playNoise(duration = 0.15, volume = 0.08, centerFreq = 800) {
+  if (!soundEnabled || !audioCtx) return;
+  const bufferSize = audioCtx.sampleRate * duration;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+  const src = audioCtx.createBufferSource();
+  src.buffer = buffer;
+  const gain = audioCtx.createGain();
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'bandpass'; filter.frequency.value = centerFreq; filter.Q.value = 1.5;
+  gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  src.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+  src.start();
+}
+
+function sfxClick()    { initAudio(); playTone(660, 0.08, 'triangle', 0.12); vibrate('light'); }
+function sfxPour()     {
+  initAudio();
+  playNoise(0.7, 0.12, 600);
+  playTone(280, 0.5, 'sine', 0.05, 0.1);
+  playTone(220, 0.6, 'sine', 0.04, 0.3);
+  for (let i = 0; i < 3; i++) {
+    setTimeout(() => playTone(800 + Math.random() * 400, 0.05, 'sine', 0.08), 300 + i * 150);
+  }
+}
+function sfxWin()      {
+  initAudio();
+  playTone(523, 0.18, 'triangle', 0.18, 0);
+  playTone(659, 0.18, 'triangle', 0.18, 0.15);
+  playTone(784, 0.18, 'triangle', 0.18, 0.30);
+  playTone(1046, 0.35, 'triangle', 0.20, 0.45);
+  vibrate('success');
+}
+function sfxBuy()      { initAudio(); playTone(880, 0.1, 'square', 0.1); playTone(1175, 0.15, 'square', 0.1, 0.08); vibrate('light'); }
+function sfxError()    { initAudio(); playTone(220, 0.15, 'sawtooth', 0.1); playTone(165, 0.2, 'sawtooth', 0.1, 0.1); vibrate('error'); }
+function sfxUnlock()   { initAudio(); playTone(659, 0.1, 'triangle', 0.15); playTone(880, 0.2, 'triangle', 0.15, 0.1); }
+function sfxCoin()     { initAudio(); playTone(1318, 0.08, 'triangle', 0.15); playTone(1568, 0.15, 'triangle', 0.15, 0.06); vibrate('light'); }
+
 /* ============================================================
    ЦВЕТА
 ============================================================ */
@@ -351,51 +1199,105 @@ const COLORS = {
   Y: { g: 'linear-gradient(180deg, #fde047, #ca8a04)' },
   P: { g: 'linear-gradient(180deg, #c996ff, #9333ea)' },
   O: { g: 'linear-gradient(180deg, #fdae5a, #ea580c)' },
+  C: { g: 'linear-gradient(180deg, #67e8f9, #0891b2)' },
+  M: { g: 'linear-gradient(180deg, #f9a8d4, #db2777)' },
 };
-const COLOR_HEX = { R:'#ef4444', G:'#22c55e', B:'#3b82f6', Y:'#eab308', P:'#a855f7', O:'#f97316' };
+const COLOR_HEX = { R:'#ef4444', G:'#22c55e', B:'#3b82f6', Y:'#eab308', P:'#a855f7', O:'#f97316', C:'#06b6d4', M:'#ec4899' };
+const COLOR_HEX_LIGHT = { R:'#ffb3b3', G:'#a3f0bb', B:'#b8d4ff', Y:'#fef08a', P:'#e0c4ff', O:'#fdd9a8', C:'#a8f0f9', M:'#fdd0e8' };
+const COLOR_HEX_DARK = { R:'#7f1d1d', G:'#14532d', B:'#1e3a8a', Y:'#713f12', P:'#581c87', O:'#7c2d12', C:'#164e63', M:'#831843' };
 const COLOR_KEYS = Object.keys(COLORS);
 const TUBE_SIZE = 3;
 
 /* ============================================================
-   50 УРОВНЕЙ
+   ФОНЫ
 ============================================================ */
-const LEVELS = [
-  { colors: 2, empty: 2 }, { colors: 2, empty: 2 }, { colors: 3, empty: 2 },
-  { colors: 3, empty: 2 }, { colors: 3, empty: 3 },
-  { colors: 3, empty: 2 }, { colors: 3, empty: 2 }, { colors: 4, empty: 2 },
-  { colors: 4, empty: 2 }, { colors: 4, empty: 3 }, { colors: 4, empty: 2 },
-  { colors: 4, empty: 2 },
-  { colors: 5, empty: 2 }, { colors: 5, empty: 2 }, { colors: 5, empty: 3 },
-  { colors: 5, empty: 2 }, { colors: 4, empty: 2 }, { colors: 5, empty: 2 },
-  { colors: 5, empty: 2 }, { colors: 5, empty: 2 },
-  { colors: 6, empty: 2 }, { colors: 5, empty: 2 }, { colors: 6, empty: 2 },
-  { colors: 6, empty: 3 }, { colors: 6, empty: 2 }, { colors: 6, empty: 2 },
-  { colors: 5, empty: 2 }, { colors: 6, empty: 2 }, { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 3 }, { colors: 6, empty: 2 }, { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 }, { colors: 5, empty: 2 }, { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 }, { colors: 6, empty: 3 }, { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 }, { colors: 6, empty: 2 }, { colors: 5, empty: 2 },
-  { colors: 6, empty: 2 }, { colors: 6, empty: 2 }, { colors: 6, empty: 3 },
-  { colors: 6, empty: 2 }, { colors: 6, empty: 2 }, { colors: 6, empty: 2 },
-  { colors: 6, empty: 2 },
-];
+const BACKGROUNDS = {
+  default: { name: 'Стандарт',  cls: 'bg-default'  },
+  cosmos:  { name: 'Космос',    cls: 'bg-cosmos'   },
+  sunset:  { name: 'Закат',     cls: 'bg-sunset'   },
+  forest:  { name: 'Лес',       cls: 'bg-forest'   },
+  ocean:   { name: 'Океан',     cls: 'bg-ocean'    },
+  candy:   { name: 'Карамель',  cls: 'bg-candy'    },
+  gold:    { name: 'Золото',    cls: 'bg-gold'     }
+};
+
+/* ============================================================
+   150 УРОВНЕЙ
+============================================================ */
+const TOTAL_LEVELS = 150;
+const LEVELS = [];
+(function buildLevelsList() {
+  for (let i = 0; i < TOTAL_LEVELS; i++) {
+    let colors, empty;
+    if (i < 5)          { colors = 2; empty = 2; }
+    else if (i < 15)    { colors = 3; empty = i % 3 === 0 ? 3 : 2; }
+    else if (i < 35)    { colors = 4; empty = i % 4 === 0 ? 3 : 2; }
+    else if (i < 65)    { colors = 5; empty = i % 5 === 0 ? 3 : 2; }
+    else if (i < 105)   { colors = 6; empty = i % 6 === 0 ? 3 : 2; }
+    else if (i < 135)   { colors = 7; empty = i % 7 === 0 ? 3 : 2; }
+    else                { colors = 8; empty = i % 8 === 0 ? 3 : 2; }
+    LEVELS.push({ colors, empty, id: i });
+  }
+})();
 
 /* ============================================================
    ПРОГРЕСС
 ============================================================ */
-const STORAGE_KEY = 'miniTubes_v1';
-let progress = { unlocked: 0, completed: {}, records: {} };
+const STORAGE_KEY = 'miniTubes_vk_v1';
 
-function loadProgress() {
+let progress = {
+  unlocked: 0, completed: {}, records: {}, coins: 0, totalMoves: 0,
+  boosts: { extra: 0, hint: 0, shuffle: 0, undo: 0, skip: 0 },
+  skins: { glass: true, neon: false, gold: false },
+  activeSkin: 'glass',
+  backgrounds: { default: true, cosmos: false, sunset: false, forest: false, ocean: false, candy: false, gold: false },
+  activeBg: 'default',
+  soundEnabled: true,
+  vibrationEnabled: true
+};
+
+// Загрузка из localStorage (мгновенно)
+function loadFromLocal() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) progress = Object.assign(progress, JSON.parse(raw));
+    if (raw) {
+      const data = JSON.parse(raw);
+      progress = Object.assign(progress, data);
+      progress.boosts = Object.assign({ extra:0, hint:0, shuffle:0, undo:0, skip:0 }, progress.boosts || {});
+      progress.skins = Object.assign({ glass:true, neon:false, gold:false }, progress.skins || {});
+      progress.backgrounds = Object.assign(
+        { default:true, cosmos:false, sunset:false, forest:false, ocean:false, candy:false, gold:false },
+        progress.backgrounds || {}
+      );
+      if (typeof progress.soundEnabled === 'boolean') soundEnabled = progress.soundEnabled;
+      if (typeof progress.vibrationEnabled === 'boolean') vibrationEnabled = progress.vibrationEnabled;
+    }
   } catch (e) {}
 }
-function saveProgress() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch (e) {}
+
+// Сохранение и в localStorage, и в VK Storage
+async function saveProgress() {
+  progress.soundEnabled = soundEnabled;
+  progress.vibrationEnabled = vibrationEnabled;
+  const data = JSON.stringify(progress);
+  try { localStorage.setItem(STORAGE_KEY, data); } catch (e) {}
+  if (vkAvailable) {
+    vkStorageSet(STORAGE_KEY, progress).catch(() => {});
+  }
+}
+
+function applyBackground() {
+  const bg = BACKGROUNDS[progress.activeBg] || BACKGROUNDS.default;
+  document.body.className = document.body.className.split(' ').filter(c => !c.startsWith('bg-')).join(' ');
+  document.body.classList.add(bg.cls);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) {
+    const themeColors = {
+      default: '#0b1120', cosmos: '#0a0520', sunset: '#4a1e5c',
+      forest: '#061208', ocean: '#020617', candy: '#1a0520', gold: '#1c0a00'
+    };
+    meta.setAttribute('content', themeColors[progress.activeBg] || '#0b1120');
+  }
 }
 
 /* ============================================================
@@ -425,6 +1327,30 @@ const progressFill = document.getElementById('progressFill');
 const progressText = document.getElementById('progressText');
 const toastEl    = document.getElementById('toast');
 
+const coinsEl       = document.getElementById('coinsNum');
+const shopCoinsEl   = document.getElementById('shopCoins');
+const hintCountEl   = document.getElementById('hintCount');
+const shuffleCountEl= document.getElementById('shuffleCount');
+const hintBtn    = document.getElementById('hintBtn');
+const shuffleBtn = document.getElementById('shuffleBtn');
+
+const shopModal  = document.getElementById('shopModal');
+const shopBtn    = document.getElementById('shopBtn');
+const closeShop  = document.getElementById('closeShop');
+const adExtraBuy = document.getElementById('adExtraBuy');
+const adCoinsBuy = document.getElementById('adCoinsBuy');
+
+const settingsBtn   = document.getElementById('settingsBtn');
+const settingsModal = document.getElementById('settingsModal');
+const closeSettings = document.getElementById('closeSettings');
+const soundToggle   = document.getElementById('soundToggle');
+const vibrationToggle = document.getElementById('vibrationToggle');
+const goToSkins     = document.getElementById('goToSkins');
+const goToBackgrounds = document.getElementById('goToBackgrounds');
+const resetProgress = document.getElementById('resetProgress');
+const currentSkinEl = document.getElementById('currentSkin');
+const currentBgEl   = document.getElementById('currentBg');
+
 /* ============================================================
    ГЕНЕРАЦИЯ
 ============================================================ */
@@ -437,7 +1363,7 @@ function shuffle(a) {
 }
 
 function paletteFor(index, count) {
-  const offset = (index * 2) % COLOR_KEYS.length;
+  const offset = (index * 3) % COLOR_KEYS.length;
   const rotated = [];
   for (let i = 0; i < COLOR_KEYS.length; i++) {
     rotated.push(COLOR_KEYS[(offset + i) % COLOR_KEYS.length]);
@@ -445,15 +1371,48 @@ function paletteFor(index, count) {
   return rotated.slice(0, count);
 }
 
+function isSolvable(startTubes, maxStates = 3000) {
+  const key = t => t.map(x => x.join(',')).sort().join('|');
+  const start = startTubes.map(t => t.slice());
+  const seen = new Set([key(start)]);
+  const queue = [start];
+  let states = 0;
+
+  while (queue.length && states < maxStates) {
+    const cur = queue.shift();
+    states++;
+    if (cur.every(t => t.length === 0 || (t.length === TUBE_SIZE && t.every(c => c === t[0])))) return true;
+
+    for (let i = 0; i < cur.length; i++) {
+      if (!cur[i].length) continue;
+      const topC = cur[i][cur[i].length - 1];
+      let cnt = 0;
+      for (let k = cur[i].length - 1; k >= 0 && cur[i][k] === topC; k--) cnt++;
+      for (let j = 0; j < cur.length; j++) {
+        if (i === j) continue;
+        const to = cur[j];
+        if (to.length >= TUBE_SIZE) continue;
+        if (to.length && to[to.length - 1] !== topC) continue;
+        if (to.length === 0 && cur[i].length === cnt && cnt === TUBE_SIZE) continue;
+        const amount = Math.min(cnt, TUBE_SIZE - to.length);
+        const next = cur.map(t => t.slice());
+        for (let k = 0; k < amount; k++) next[j].push(next[i].pop());
+        const k2 = key(next);
+        if (!seen.has(k2)) { seen.add(k2); queue.push(next); }
+      }
+    }
+  }
+  return false;
+}
+
 function buildLevel(index) {
   const cfg = LEVELS[index];
   const keys = paletteFor(index, cfg.colors);
 
-  for (let attempt = 0; attempt < 60; attempt++) {
+  for (let attempt = 0; attempt < 100; attempt++) {
     const pool = [];
     keys.forEach(k => { for (let i = 0; i < TUBE_SIZE; i++) pool.push(k); });
     shuffle(pool);
-
     const res = [];
     for (let i = 0; i < cfg.colors; i++) res.push(pool.slice(i * TUBE_SIZE, (i + 1) * TUBE_SIZE));
     for (let i = 0; i < cfg.empty; i++) res.push([]);
@@ -462,10 +1421,12 @@ function buildLevel(index) {
     if (ready) continue;
     const diverse = res.every(t => t.length === 0 || new Set(t).size >= 2);
     if (!diverse) continue;
+    if (!isSolvable(res, 3000)) continue;
     return res;
   }
+
   const res = [];
-  for (let i = 0; i < cfg.colors; i++) res.push([keys[i], keys[(i+1)%keys.length], keys[i]]);
+  for (let i = 0; i < cfg.colors; i++) res.push([keys[i], keys[(i + 1) % keys.length], keys[i]]);
   for (let i = 0; i < cfg.empty; i++) res.push([]);
   return res;
 }
@@ -505,12 +1466,59 @@ function render() {
     if (selected === idx) el.classList.add('selected');
     if (isDone(tube)) el.classList.add('done');
 
-    tube.forEach(c => {
+    if (progress.activeSkin === 'neon') el.classList.add('skin-neon');
+    if (progress.activeSkin === 'gold') el.classList.add('skin-gold');
+
+    const glass = document.createElement('div');
+    glass.className = 'tube-glass';
+    el.appendChild(glass);
+
+    const liquid = document.createElement('div');
+    liquid.className = 'tube-liquid';
+    const fillRatio = tube.length / TUBE_SIZE;
+    const liquidMaxH = 0.82;
+    liquid.style.height = (fillRatio * liquidMaxH * 100) + '%';
+    liquid.style.bottom = '7%';
+
+    tube.forEach((c, i) => {
+      const isTop = i === tube.length - 1;
       const layer = document.createElement('div');
-      layer.className = 'layer';
-      layer.style.background = COLORS[c].g;
-      el.appendChild(layer);
+      layer.className = 'layer' + (isTop ? ' top-layer' : '');
+      layer.style.background =
+        `linear-gradient(180deg,
+          ${COLOR_HEX_LIGHT[c]} 0%,
+          ${COLOR_HEX[c]} 35%,
+          ${COLOR_HEX[c]} 65%,
+          ${COLOR_HEX_DARK[c]} 100%)`;
+
+      const depth = document.createElement('div');
+      depth.className = 'layer-depth';
+      layer.appendChild(depth);
+
+      const gloss = document.createElement('div');
+      gloss.className = 'layer-gloss';
+      layer.appendChild(gloss);
+
+      liquid.appendChild(layer);
     });
+
+    el.appendChild(liquid);
+
+    const neck = document.createElement('div');
+    neck.className = 'tube-neck';
+    el.appendChild(neck);
+
+    const shine = document.createElement('div');
+    shine.className = 'tube-shine';
+    el.appendChild(shine);
+
+    const shineR = document.createElement('div');
+    shineR.className = 'tube-shine-r';
+    el.appendChild(shineR);
+
+    const shadowB = document.createElement('div');
+    shadowB.className = 'tube-shadow-bottom';
+    el.appendChild(shadowB);
 
     el.addEventListener('click', () => onTubeClick(idx));
     boardEl.appendChild(el);
@@ -519,6 +1527,24 @@ function render() {
   undoBtn.disabled = busy || history.length === 0;
   prevBtn.disabled = busy || level === 0;
   nextLvlBtn.disabled = busy || level >= progress.unlocked || level >= LEVELS.length - 1;
+
+  updateHUD();
+}
+
+function updateHUD() {
+  coinsEl.textContent = progress.coins;
+  if (shopCoinsEl) shopCoinsEl.textContent = progress.coins;
+  hintCountEl.textContent = progress.boosts.hint || 0;
+  shuffleCountEl.textContent = progress.boosts.shuffle || 0;
+  hintBtn.disabled = (progress.boosts.hint || 0) <= 0 || busy || won;
+  shuffleBtn.disabled = (progress.boosts.shuffle || 0) <= 0 || busy || won;
+  soundToggle.classList.toggle('on', soundEnabled);
+  vibrationToggle.classList.toggle('on', vibrationEnabled);
+  currentSkinEl.textContent = progress.activeSkin === 'neon' ? 'Неон'
+                            : progress.activeSkin === 'gold' ? 'Золото'
+                            : 'Стекло';
+  const bg = BACKGROUNDS[progress.activeBg] || BACKGROUNDS.default;
+  currentBgEl.textContent = bg.name;
 }
 
 /* ============================================================
@@ -530,11 +1556,13 @@ function onTubeClick(idx) {
   if (selected === null) {
     if (!tubes[idx].length || isDone(tubes[idx])) return;
     selected = idx;
+    sfxClick();
     render();
     return;
   }
   if (selected === idx) {
     selected = null;
+    sfxClick();
     render();
     return;
   }
@@ -544,13 +1572,14 @@ function onTubeClick(idx) {
     render();
     doPour(from, idx);
   } else {
+    sfxError();
     selected = (!tubes[idx].length || isDone(tubes[idx])) ? null : idx;
     render();
   }
 }
 
 /* ============================================================
-   АНИМАЦИЯ
+   РЕАЛИСТИЧНЫЙ ПЕРЕЛИВ
 ============================================================ */
 async function doPour(from, to) {
   busy = true;
@@ -559,7 +1588,8 @@ async function doPour(from, to) {
   const amount   = Math.min(countTopSame(tubes[from]), TUBE_SIZE - tubes[to].length);
   const colorKey = topColor(tubes[from]);
   const colorHex = COLOR_HEX[colorKey];
-  const toCount  = tubes[to].length;
+  const colorLight = COLOR_HEX_LIGHT[colorKey];
+  const colorDark = COLOR_HEX_DARK[colorKey];
 
   history.push({ state: tubes.map(t => t.slice()), moves });
 
@@ -568,20 +1598,19 @@ async function doPour(from, to) {
   const fromRect = fromEl.getBoundingClientRect();
   const toRect   = toEl.getBoundingClientRect();
 
-  const w = fromRect.width;
-  const h = fromRect.height;
-  const cx = fromRect.left + w / 2;
-  const cy = fromRect.top  + h / 2;
+  const cx = fromRect.left + fromRect.width / 2;
+  const cy = fromRect.top  + fromRect.height / 2;
+  const h  = fromRect.height;
 
   const toRight = (toRect.left + toRect.width / 2) > cx;
-  const angle = toRight ? 60 : -60;
+  const angle = toRight ? 68 : -68;
   const rad = angle * Math.PI / 180;
 
   const mouthOffX = Math.sin(rad) * h / 2;
   const mouthOffY = -Math.cos(rad) * h / 2;
 
   const targetMouthX = toRect.left + toRect.width / 2;
-  const targetMouthY = toRect.top - 6;
+  const targetMouthY = toRect.top - 4;
 
   const newCx = targetMouthX - mouthOffX;
   const newCy = targetMouthY - mouthOffY;
@@ -593,99 +1622,194 @@ async function doPour(from, to) {
   await fromEl.animate(
     [
       { transform: 'translate(0,0) rotate(0deg)' },
-      { transform: 'translate(0,-26px) rotate(0deg)' },
+      { transform: 'translate(0,-32px) rotate(0deg)' },
     ],
-    { duration: 170, easing: 'ease-out', fill: 'forwards' }
+    { duration: 200, easing: 'cubic-bezier(.34,1.3,.64,1)', fill: 'forwards' }
   ).finished;
 
   await fromEl.animate(
     [
-      { transform: `translate(0,-26px) rotate(0deg)` },
-      { transform: `translate(${dx}px, ${dy + 26}px) rotate(${angle}deg)` },
+      { transform: `translate(0,-32px) rotate(0deg)` },
+      { transform: `translate(${dx}px, ${dy + 32}px) rotate(${angle}deg)` },
     ],
-    { duration: 460, easing: 'cubic-bezier(.45,0,.2,1)', fill: 'forwards' }
+    { duration: 520, easing: 'cubic-bezier(.34,1.15,.5,1)', fill: 'forwards' }
   ).finished;
 
-  const streamTop    = targetMouthY + 2;
-  const streamBottom = toRect.top + toRect.height * 0.62;
-  const streamHeight = Math.max(18, streamBottom - streamTop);
+  const targetLiquid = toEl.querySelector('.tube-liquid');
+  const tubeInnerTop = toRect.top + 12;
+  const tubeInnerBottom = toRect.bottom - 10;
+  const tubeInnerHeight = tubeInnerBottom - tubeInnerTop;
+  const layerHeight = tubeInnerHeight / TUBE_SIZE;
+
+  const existingLayers = tubes[to].length;
+  const streamX = targetMouthX;
+  const streamTop = targetMouthY + 2;
+  const streamBottom = tubeInnerBottom - (existingLayers * layerHeight);
 
   const stream = document.createElement('div');
+  const streamWidth = Math.max(4, toRect.width * 0.1);
   Object.assign(stream.style, {
     position: 'fixed',
-    left: (targetMouthX - 3) + 'px',
-    top:  streamTop + 'px',
-    width: '6px',
+    left: (streamX - streamWidth / 2) + 'px',
+    top: streamTop + 'px',
+    width: streamWidth + 'px',
     height: '0px',
-    background: `linear-gradient(180deg, ${colorHex}, ${colorHex}cc)`,
-    borderRadius: '4px',
+    background: `linear-gradient(180deg,
+      ${colorLight} 0%,
+      ${colorHex} 30%,
+      ${colorHex} 70%,
+      ${colorDark} 100%)`,
+    borderRadius: streamWidth + 'px',
     zIndex: 9998,
     pointerEvents: 'none',
-    boxShadow: `0 0 14px ${colorHex}, 0 0 4px ${colorHex}`,
-    filter: 'brightness(1.08)',
+    boxShadow: `0 0 16px ${colorHex}, 0 0 6px ${colorLight}, inset 0 0 6px ${colorLight}aa`,
+    filter: 'brightness(1.1)',
+    overflow: 'hidden',
+    opacity: 0,
+    transformOrigin: 'top center',
   });
+  const streamShine = document.createElement('div');
+  Object.assign(streamShine.style, {
+    position: 'absolute',
+    left: '15%', top: 0, bottom: 0,
+    width: '20%',
+    background: `linear-gradient(180deg, ${colorLight}, ${colorLight}88)`,
+    borderRadius: '50%',
+    filter: 'blur(0.5px)',
+  });
+  stream.appendChild(streamShine);
   document.body.appendChild(stream);
+
+  const streamHeight = streamBottom - streamTop;
 
   await stream.animate(
     [
-      { height: '0px',                    opacity: 0 },
-      { height: streamHeight * 0.6 + 'px', opacity: 1, offset: 0.55 },
-      { height: streamHeight + 'px',       opacity: 1 },
+      { height: '0px',                     opacity: 0, transform: 'scaleY(1)' },
+      { height: (streamHeight * 0.5) + 'px', opacity: 1, transform: 'scaleY(1)', offset: 0.5 },
+      { height: (streamHeight * 1.05) + 'px', opacity: 1, transform: 'scaleY(1.02)', offset: 0.85 },
+      { height: streamHeight + 'px',       opacity: 1, transform: 'scaleY(1)' },
     ],
-    { duration: 220, easing: 'ease-out', fill: 'forwards' }
+    { duration: 280, easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' }
   ).finished;
 
-  const srcLayers = fromEl.querySelectorAll('.layer');
-  for (let i = 0; i < amount; i++) {
-    const l = srcLayers[srcLayers.length - 1 - i];
-    if (!l) continue;
-    l.animate(
-      [
-        { opacity: 1, transform: 'scaleY(1)' },
-        { opacity: 0, transform: 'scaleY(0.35)' },
-      ],
-      { duration: 200, delay: i * 70, easing: 'ease-in', fill: 'forwards' }
-    );
-  }
+  sfxPour();
+
+  const fromLiquid = fromEl.querySelector('.tube-liquid');
+  const srcLayers = Array.from(fromLiquid.querySelectorAll('.layer'));
 
   for (let i = 0; i < amount; i++) {
-    const layer = document.createElement('div');
-    layer.className = 'layer';
-    layer.style.background = COLORS[colorKey].g;
-    layer.style.opacity = '0';
-    toEl.appendChild(layer);
+    const layer = srcLayers[srcLayers.length - 1 - i];
+    if (!layer) continue;
+
     layer.animate(
       [
-        { opacity: 0, transform: 'scaleY(0.5)' },
-        { opacity: 1, transform: 'scaleY(1)' },
+        { transform: 'scaleY(1)', opacity: 1, filter: 'brightness(1)' },
+        { transform: 'scaleY(1)', opacity: 1, filter: 'brightness(1.4)', offset: 0.35 },
+        { transform: 'scaleY(0.05)', opacity: 0.3, filter: 'brightness(1.5)' },
       ],
-      { duration: 200, delay: i * 70, easing: 'ease-out', fill: 'forwards' }
+      { duration: 550, delay: i * 130, easing: 'cubic-bezier(.5,0,.7,.3)', fill: 'forwards' }
     );
+
+    const curH = parseFloat(fromLiquid.style.height) || 0;
+    const newH = Math.max(0, curH - (1 / TUBE_SIZE) * 82);
+    setTimeout(() => {
+      fromLiquid.style.height = newH + '%';
+    }, i * 130 + 200);
   }
 
-  await new Promise(r => setTimeout(r, 340));
+  const startH = parseFloat(targetLiquid.style.height) || 0;
+  const endH = Math.min(82, startH + (amount / TUBE_SIZE) * 82);
+  targetLiquid.style.transition = 'height ' + (amount * 130 + 300) + 'ms cubic-bezier(.3,.9,.5,1)';
+  targetLiquid.style.height = endH + '%';
+
+  for (let i = 0; i < amount; i++) {
+    const isTopNew = (existingLayers + i) === (existingLayers + amount - 1);
+    const layer = document.createElement('div');
+    layer.className = 'layer' + (isTopNew ? ' top-layer' : '');
+    layer.style.background =
+      `linear-gradient(180deg,
+        ${colorLight} 0%,
+        ${colorHex} 35%,
+        ${colorHex} 65%,
+        ${colorDark} 100%)`;
+    layer.style.transformOrigin = 'bottom center';
+    layer.style.opacity = '0';
+    layer.style.transform = 'scaleY(0)';
+
+    const depth = document.createElement('div');
+    depth.className = 'layer-depth';
+    layer.appendChild(depth);
+
+    const gloss = document.createElement('div');
+    gloss.className = 'layer-gloss';
+    layer.appendChild(gloss);
+
+    targetLiquid.appendChild(layer);
+
+    layer.animate(
+      [
+        { transform: 'scaleY(0)', opacity: 0 },
+        { transform: 'scaleY(1.15)', opacity: 1, offset: 0.6 },
+        { transform: 'scaleY(0.95)', opacity: 1, offset: 0.85 },
+        { transform: 'scaleY(1)', opacity: 1 },
+      ],
+      {
+        duration: 350,
+        delay: 350 + i * 130,
+        easing: 'cubic-bezier(.2,1.5,.4,1)',
+        fill: 'forwards'
+      }
+    );
+
+    if (i === 0 && existingLayers > 0) {
+      const prevLayers = targetLiquid.querySelectorAll('.layer');
+      const prevTop = prevLayers[existingLayers - 1];
+      if (prevTop) prevTop.classList.remove('top-layer');
+    }
+  }
+
+  const dropCount = amount * 3 + 2;
+  for (let i = 0; i < dropCount; i++) {
+    setTimeout(() => {
+      spawnDrop(streamX, streamTop, streamBottom, colorHex, colorLight, streamWidth);
+    }, 280 + i * 60);
+  }
+
+  setTimeout(() => {
+    spawnSplash(streamX, streamBottom, colorHex, colorLight);
+  }, 400);
+
+  for (let i = 0; i < 4; i++) {
+    setTimeout(() => {
+      spawnBubble(toEl, colorHex, colorLight);
+    }, 500 + i * 180);
+  }
+
+  await new Promise(r => setTimeout(r, 450 + amount * 130));
 
   stream.animate(
     [
       { height: streamHeight + 'px', opacity: 1 },
-      { height: '0px',               opacity: .6 },
+      { height: (streamHeight * 0.3) + 'px', opacity: 0.8, offset: 0.5 },
+      { height: '0px', opacity: 0.4 },
     ],
-    { duration: 200, easing: 'ease-in', fill: 'forwards' }
+    { duration: 260, easing: 'cubic-bezier(.6,0,.9,.3)', fill: 'forwards' }
   );
-  await new Promise(r => setTimeout(r, 200));
+  await new Promise(r => setTimeout(r, 260));
   stream.remove();
 
   await fromEl.animate(
     [
       { transform: `translate(${dx}px, ${dy}px) rotate(${angle}deg)` },
-      { transform: `translate(0,-22px) rotate(0deg)`, offset: 0.7 },
+      { transform: `translate(0,-28px) rotate(0deg)`, offset: 0.75 },
       { transform: `translate(0,0) rotate(0deg)` },
     ],
-    { duration: 520, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' }
+    { duration: 560, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' }
   ).finished;
 
   pourData(from, to);
   moves++;
+  progress.totalMoves = (progress.totalMoves || 0) + 1;
   movesEl.textContent = moves;
 
   fromEl.classList.remove('flying');
@@ -698,6 +1822,100 @@ async function doPour(from, to) {
 }
 
 /* ============================================================
+   ЧАСТИЦЫ
+============================================================ */
+function spawnDrop(x, topY, bottomY, colorHex, colorLight, streamW) {
+  const drop = document.createElement('div');
+  drop.className = 'drop';
+  const size = (streamW * 0.7) + Math.random() * 3;
+  Object.assign(drop.style, {
+    left: (x - size / 2 + (Math.random() - 0.5) * streamW * 0.8) + 'px',
+    top: topY + 'px',
+    width: size + 'px',
+    height: (size * 1.6) + 'px',
+    background: `radial-gradient(circle at 30% 25%, ${colorLight}, ${colorHex} 60%, ${colorHex})`,
+    boxShadow: `0 0 10px ${colorHex}, 0 0 4px ${colorLight}, inset 0 -2px 3px rgba(0,0,0,.3)`,
+  });
+  document.body.appendChild(drop);
+
+  const dist = bottomY - topY;
+  const duration = 300 + Math.random() * 150;
+
+  drop.animate(
+    [
+      { transform: 'translateY(0) scaleY(1)', opacity: 0 },
+      { transform: 'translateY(0) scaleY(1)', opacity: 1, offset: 0.08 },
+      { transform: `translateY(${dist * 0.5}px) scaleY(1.15)`, opacity: 1, offset: 0.5 },
+      { transform: `translateY(${dist}px) scaleY(1.5)`, opacity: 1, offset: 0.9 },
+      { transform: `translateY(${dist + 4}px) scaleY(0.2)`, opacity: 0 },
+    ],
+    { duration, easing: 'cubic-bezier(.4,.1,.7,1)', fill: 'forwards' }
+  ).finished.then(() => drop.remove()).catch(() => drop.remove());
+}
+
+function spawnSplash(x, y, colorHex, colorLight) {
+  for (let i = 0; i < 6; i++) {
+    const splash = document.createElement('div');
+    splash.className = 'splash';
+    const size = 3 + Math.random() * 4;
+    Object.assign(splash.style, {
+      left: (x - size / 2) + 'px',
+      top: y + 'px',
+      width: size + 'px',
+      height: size + 'px',
+      background: `radial-gradient(circle at 30% 30%, ${colorLight}, ${colorHex})`,
+      boxShadow: `0 0 8px ${colorHex}`,
+    });
+    document.body.appendChild(splash);
+
+    const angle = (Math.random() * Math.PI) - Math.PI / 2;
+    const dist = 15 + Math.random() * 25;
+    const dx = Math.cos(angle) * dist;
+    const dy = Math.sin(angle) * dist * 0.6;
+
+    splash.animate(
+      [
+        { transform: 'translate(0,0) scale(1)', opacity: 1 },
+        { transform: `translate(${dx}px, ${dy - 8}px) scale(1.2)`, opacity: 0.9, offset: 0.5 },
+        { transform: `translate(${dx * 1.5}px, ${dy + 20}px) scale(0.3)`, opacity: 0 },
+      ],
+      { duration: 500 + Math.random() * 200, easing: 'cubic-bezier(.2,.6,.5,1)', fill: 'forwards' }
+    ).finished.then(() => splash.remove()).catch(() => splash.remove());
+  }
+}
+
+function spawnBubble(tubeEl, colorHex, colorLight) {
+  const liquid = tubeEl.querySelector('.tube-liquid');
+  if (!liquid) return;
+  const liquidRect = liquid.getBoundingClientRect();
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  const size = 3 + Math.random() * 4;
+  Object.assign(bubble.style, {
+    position: 'fixed',
+    left: (liquidRect.left + 20 + Math.random() * (liquidRect.width - 40)) + 'px',
+    top: (liquidRect.bottom - 10) + 'px',
+    width: size + 'px',
+    height: size + 'px',
+    background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), ${colorLight}cc 50%, ${colorHex}88 80%, transparent)`,
+    boxShadow: `0 0 4px ${colorLight}aa`,
+    zIndex: 9996,
+  });
+  document.body.appendChild(bubble);
+
+  const travel = liquidRect.height * (0.4 + Math.random() * 0.5);
+  bubble.animate(
+    [
+      { transform: 'translateY(0) scale(1)', opacity: 0.9 },
+      { transform: `translateY(-${travel}px) scale(1.3)`, opacity: 0.7 },
+      { transform: `translateY(-${travel * 1.2}px) scale(0.6)`, opacity: 0 },
+    ],
+    { duration: 900 + Math.random() * 400, easing: 'cubic-bezier(.3,.5,.7,1)', fill: 'forwards' }
+  ).finished.then(() => bubble.remove()).catch(() => bubble.remove());
+}
+
+/* ============================================================
    ПОБЕДА
 ============================================================ */
 function checkWin() {
@@ -705,9 +1923,11 @@ function checkWin() {
   if (!ok) return;
 
   won = true;
+  sfxWin();
 
   const isNewRecord = !progress.records[level] || moves < progress.records[level];
   if (isNewRecord) progress.records[level] = moves;
+  const wasCompleted = progress.completed[level];
   progress.completed[level] = true;
 
   let unlockedSomething = false;
@@ -715,12 +1935,24 @@ function checkWin() {
     progress.unlocked = level + 1;
     unlockedSomething = true;
   }
+
+  if (!wasCompleted) {
+    const baseReward = 10;
+    const perfectBonus = moves <= LEVELS[level].colors * 2 ? 5 : 0;
+    progress.coins += baseReward + perfectBonus;
+    setTimeout(() => {
+      sfxCoin();
+      if (perfectBonus) showToast(`🪙 +${baseReward + perfectBonus} (идеально!)`);
+      else showToast(`🪙 +${baseReward} монет`);
+    }, 400);
+  }
+
   saveProgress();
 
   statusEl.className = 'status win';
   const isLast = level === LEVELS.length - 1;
   if (isLast) {
-    statusEl.textContent = `🏆 ФИНАЛ! Все 50 уровней пройдены!`;
+    statusEl.textContent = `🏆 ФИНАЛ! Все ${LEVELS.length} уровней пройдены!`;
     nextBtn.style.display = 'none';
   } else {
     const recText = isNewRecord ? ' 🏅 Новый рекорд!' : '';
@@ -729,8 +1961,13 @@ function checkWin() {
   }
 
   if (unlockedSomething) {
-    setTimeout(() => showToast(`🔓 Уровень ${level + 2} открыт!`), 300);
+    setTimeout(() => {
+      sfxUnlock();
+      showToast(`🔓 Уровень ${level + 2} открыт!`);
+    }, 600);
   }
+
+  updateHUD();
 }
 
 /* ============================================================
@@ -739,6 +1976,7 @@ function checkWin() {
 function startLevel(index) {
   if (index < 0 || index >= LEVELS.length) return;
   if (index > progress.unlocked) {
+    sfxError();
     showToast('🔒 Уровень закрыт. Пройди предыдущие!');
     return;
   }
@@ -771,11 +2009,12 @@ function undo() {
   statusEl.className = 'status';
   statusEl.textContent = '';
   nextBtn.style.display = 'none';
+  sfxClick();
   render();
 }
 
 /* ============================================================
-   МОДАЛКА
+   МОДАЛКА УРОВНЕЙ
 ============================================================ */
 function renderLevelGrid() {
   levelsGrid.innerHTML = '';
@@ -807,10 +2046,7 @@ function renderLevelGrid() {
     }
 
     cell.addEventListener('click', () => {
-      if (!unlocked) {
-        showToast('🔒 Сначала пройди предыдущие');
-        return;
-      }
+      if (!unlocked) { sfxError(); showToast('🔒 Сначала пройди предыдущие'); return; }
       closeModalFn();
       startLevel(i);
     });
@@ -823,12 +2059,290 @@ function renderLevelGrid() {
   progressFill.style.width = (done / LEVELS.length * 100) + '%';
 }
 
-function openModalFn() {
-  renderLevelGrid();
-  modal.classList.add('show');
+function openModalFn() { renderLevelGrid(); modal.classList.add('show'); }
+function closeModalFn() { modal.classList.remove('show'); }
+
+/* ============================================================
+   МАГАЗИН
+============================================================ */
+function openShop() {
+  updateHUD();
+  refreshShopButtons();
+  shopModal.classList.add('show');
 }
-function closeModalFn() {
-  modal.classList.remove('show');
+function closeShopFn() { shopModal.classList.remove('show'); }
+
+function onBuy(btn) {
+  const item = btn.dataset.buy;
+  const cost = parseInt(btn.dataset.cost, 10) || 0;
+  const skin = btn.dataset.skin;
+  const bg   = btn.dataset.bg;
+
+  if (bg) {
+    if (progress.backgrounds[bg]) {
+      progress.activeBg = bg;
+      applyBackground();
+      saveProgress();
+      refreshShopButtons();
+      sfxClick();
+      showToast(`🖼️ Фон «${BACKGROUNDS[bg].name}» активирован`);
+      return;
+    }
+    if (progress.coins < cost) { sfxError(); showToast('🪙 Не хватает монет'); return; }
+    progress.coins -= cost;
+    progress.backgrounds[bg] = true;
+    progress.activeBg = bg;
+    applyBackground();
+    saveProgress();
+    updateHUD();
+    refreshShopButtons();
+    sfxBuy();
+    showToast(`🎨 Фон «${BACKGROUNDS[bg].name}» куплен!`);
+    return;
+  }
+
+  if (skin) {
+    if (progress.skins[skin]) {
+      progress.activeSkin = skin;
+      saveProgress();
+      refreshShopButtons();
+      render();
+      sfxClick();
+      showToast('✨ Скин активирован');
+      return;
+    }
+    if (progress.coins < cost) { sfxError(); showToast('🪙 Не хватает монет'); return; }
+    progress.coins -= cost;
+    progress.skins[skin] = true;
+    progress.activeSkin = skin;
+    saveProgress();
+    updateHUD();
+    refreshShopButtons();
+    render();
+    sfxBuy();
+    showToast('🎨 Скин куплен!');
+    return;
+  }
+
+  if (progress.coins < cost) { sfxError(); showToast('🪙 Не хватает монет'); return; }
+  progress.coins -= cost;
+  sfxBuy();
+
+  switch (item) {
+    case 'hint':
+      progress.boosts.hint = (progress.boosts.hint || 0) + 3;
+      showToast('💡 3 подсказки куплены');
+      break;
+    case 'shuffle':
+      progress.boosts.shuffle = (progress.boosts.shuffle || 0) + 3;
+      showToast('🔀 3 перемешивания куплены');
+      break;
+    case 'skip':
+      progress.boosts.skip = (progress.boosts.skip || 0) + 1;
+      if (level < LEVELS.length - 1) {
+        progress.completed[level] = true;
+        progress.unlocked = Math.max(progress.unlocked, level + 1);
+        saveProgress();
+        startLevel(level + 1);
+        showToast('⏭️ Уровень пропущен');
+        closeShopFn();
+        return;
+      }
+      break;
+  }
+  saveProgress();
+  updateHUD();
+  refreshShopButtons();
+}
+
+function refreshShopButtons() {
+  document.querySelectorAll('.shop-buy').forEach(btn => {
+    if (btn.id === 'adExtraBuy' || btn.id === 'adCoinsBuy') return;
+    const skin = btn.dataset.skin;
+    const bg   = btn.dataset.bg;
+    const cost = parseInt(btn.dataset.cost, 10) || 0;
+
+    if (bg) {
+      if (progress.activeBg === bg) {
+        btn.textContent = '✓ Активен'; btn.classList.add('active-skin'); btn.disabled = true;
+      } else if (progress.backgrounds[bg]) {
+        btn.textContent = 'Активировать'; btn.classList.add('owned'); btn.disabled = false;
+      } else {
+        btn.textContent = cost + ' 🪙';
+        btn.classList.remove('owned', 'active-skin');
+        btn.disabled = progress.coins < cost;
+      }
+      return;
+    }
+    if (skin) {
+      if (progress.activeSkin === skin) {
+        btn.textContent = '✓ Активен'; btn.classList.add('active-skin'); btn.disabled = true;
+      } else if (progress.skins[skin]) {
+        btn.textContent = 'Активировать'; btn.classList.add('owned'); btn.disabled = false;
+      } else {
+        btn.textContent = cost + ' 🪙';
+        btn.classList.remove('owned', 'active-skin');
+        btn.disabled = progress.coins < cost;
+      }
+      return;
+    }
+    btn.disabled = progress.coins < cost;
+  });
+}
+
+/* ============================================================
+   РЕКЛАМА VK — КОЛБА И МОНЕТЫ
+============================================================ */
+async function watchAdExtra() {
+  if (!vkAvailable) {
+    sfxError();
+    showToast('📺 Реклама доступна только в VK');
+    return;
+  }
+
+  showToast('📺 Загружаем рекламу...');
+
+  const result = await showVKRewardedAd();
+
+  if (result.ok) {
+    progress.boosts.extra = (progress.boosts.extra || 0) + 1;
+    saveProgress();
+    updateHUD();
+    refreshShopButtons();
+    sfxCoin();
+    vibrate('success');
+    showToast('🎁 +1 колба за рекламу!');
+  } else if (result.reason === 'not_watched') {
+    sfxError();
+    showToast('Реклама не досмотрена');
+  } else {
+    sfxError();
+    showToast('Реклама временно недоступна');
+  }
+}
+
+async function watchAdCoins() {
+  if (!vkAvailable) {
+    sfxError();
+    showToast('📺 Реклама доступна только в VK');
+    return;
+  }
+
+  showToast('📺 Загружаем рекламу...');
+
+  const result = await showVKRewardedAd();
+
+  if (result.ok) {
+    progress.coins += 50;
+    saveProgress();
+    updateHUD();
+    refreshShopButtons();
+    sfxCoin();
+    vibrate('success');
+    showToast('🪙 +50 монет!');
+  } else if (result.reason === 'not_watched') {
+    sfxError();
+    showToast('Реклама не досмотрена');
+  } else {
+    sfxError();
+    showToast('Реклама временно недоступна');
+  }
+}
+
+/* ============================================================
+   БУСТЫ
+============================================================ */
+function useHint() {
+  if (busy || won || (progress.boosts.hint || 0) <= 0) return;
+  const hint = findHint();
+  if (!hint) { sfxError(); showToast('🤔 Ходов нет'); return; }
+  progress.boosts.hint--;
+  saveProgress(); updateHUD();
+  highlightHint(hint.from, hint.to);
+  sfxClick();
+  showToast(`💡 ${hint.from + 1} → ${hint.to + 1}`);
+}
+
+function useShuffle() {
+  if (busy || won || (progress.boosts.shuffle || 0) <= 0) return;
+  progress.boosts.shuffle--;
+  history.push({ state: tubes.map(t => t.slice()), moves });
+  const all = [];
+  tubes.forEach(t => t.forEach(c => all.push(c)));
+  shuffle(all);
+  let i = 0;
+  tubes = tubes.map(t => {
+    const len = t.length;
+    const part = all.slice(i, i + len);
+    i += len;
+    return part;
+  });
+  saveProgress(); updateHUD(); sfxPour();
+  render();
+  showToast('🔀 Перемешано');
+}
+
+function findHint() {
+  for (let i = 0; i < tubes.length; i++) {
+    for (let j = 0; j < tubes.length; j++) {
+      if (i === j || !canPour(i, j)) continue;
+      const from = tubes[i], to = tubes[j];
+      const amount = Math.min(countTopSame(from), TUBE_SIZE - to.length);
+      const merged = [...to, ...from.slice(-amount)];
+      if (merged.length === TUBE_SIZE && new Set(merged).size === 1) return { from: i, to: j };
+    }
+  }
+  for (let i = 0; i < tubes.length; i++) {
+    for (let j = 0; j < tubes.length; j++) {
+      if (i !== j && !tubes[j].length && canPour(i, j)) return { from: i, to: j };
+    }
+  }
+  for (let i = 0; i < tubes.length; i++) {
+    for (let j = 0; j < tubes.length; j++) {
+      if (i !== j && canPour(i, j)) return { from: i, to: j };
+    }
+  }
+  return null;
+}
+
+function highlightHint(from, to) {
+  const els = boardEl.children;
+  [from, to].forEach(i => {
+    const el = els[i];
+    if (!el) return;
+    el.animate(
+      [
+        { filter: 'drop-shadow(0 6px 12px rgba(0,0,0,.4)) drop-shadow(0 0 0px rgba(253,224,71,0))' },
+        { filter: 'drop-shadow(0 6px 12px rgba(0,0,0,.4)) drop-shadow(0 0 20px rgba(253,224,71,.95))', offset: 0.5 },
+        { filter: 'drop-shadow(0 6px 12px rgba(0,0,0,.4)) drop-shadow(0 0 0px rgba(253,224,71,0))' },
+      ],
+      { duration: 700, iterations: 3 }
+    );
+  });
+}
+
+/* ============================================================
+   НАСТРОЙКИ
+============================================================ */
+function openSettings() {
+  updateHUD();
+  updateStats();
+  settingsModal.classList.add('show');
+}
+function closeSettingsFn() { settingsModal.classList.remove('show'); }
+
+function updateStats() {
+  const done = Object.keys(progress.completed).length;
+  const total = LEVELS.length;
+  const records = Object.values(progress.records).filter(v => typeof v === 'number');
+  const best = records.length ? Math.min(...records) : null;
+
+  document.getElementById('statCompleted').textContent = done;
+  document.getElementById('statUnlocked').textContent = progress.unlocked + 1;
+  document.getElementById('statCoins').textContent = progress.coins;
+  document.getElementById('statMoves').textContent = progress.totalMoves || 0;
+  document.getElementById('statBest').textContent = best !== null ? best : '—';
+  document.getElementById('statProgress').textContent = Math.round(done / total * 100) + '%';
 }
 
 /* ============================================================
@@ -843,7 +2357,7 @@ function showToast(text) {
 }
 
 /* ============================================================
-   КНОПКИ
+   СОБЫТИЯ
 ============================================================ */
 undoBtn.addEventListener('click', undo);
 document.getElementById('restartBtn').addEventListener('click', () => { if (!busy) startLevel(level); });
@@ -854,37 +2368,150 @@ levelsBtn.addEventListener('click',  () => { if (!busy) openModalFn(); });
 closeModal.addEventListener('click', closeModalFn);
 modal.addEventListener('click', (e) => { if (e.target === modal) closeModalFn(); });
 
-window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeModalFn();
+hintBtn.addEventListener('click', useHint);
+shuffleBtn.addEventListener('click', useShuffle);
+
+shopBtn.addEventListener('click', openShop);
+closeShop.addEventListener('click', closeShopFn);
+shopModal.addEventListener('click', (e) => { if (e.target === shopModal) closeShopFn(); });
+
+if (adExtraBuy) adExtraBuy.addEventListener('click', watchAdExtra);
+if (adCoinsBuy) adCoinsBuy.addEventListener('click', watchAdCoins);
+
+settingsBtn.addEventListener('click', openSettings);
+closeSettings.addEventListener('click', closeSettingsFn);
+settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsFn(); });
+
+soundToggle.addEventListener('click', () => {
+  soundEnabled = !soundEnabled;
+  saveProgress(); updateHUD();
+  if (soundEnabled) { initAudio(); sfxClick(); showToast('🔊 Звук включён'); }
+  else showToast('🔇 Звук выключен');
 });
 
-/* ============================================================
-   VK BRIDGE — инициализация мини-приложения
-============================================================ */
-function initVK() {
-  if (typeof vkBridge === 'undefined') {
-    console.log('VK Bridge не найден (обычный браузер)');
-    return;
-  }
-  vkBridge.send('VKWebAppInit')
-    .then(() => {
-      console.log('✅ VK Bridge инициализирован');
-      // Красим хедер ВК под фон игры
-      vkBridge.send('VKWebAppSetViewSettings', {
-        status_bar_style: 'light',
-        action_bar_color: '#0b1120',
-        navigation_bar_color: '#0b1120'
-      }).catch(() => {});
-    })
-    .catch(err => console.error('❌ Ошибка VK Bridge:', err));
-}
+vibrationToggle.addEventListener('click', () => {
+  vibrationEnabled = !vibrationEnabled;
+  saveProgress(); updateHUD();
+  if (vibrationEnabled) { vibrate('light'); showToast('📳 Вибрация включена'); }
+  else showToast('📴 Вибрация выключена');
+});
+
+goToSkins.addEventListener('click', () => {
+  closeSettingsFn(); openShop();
+  setTimeout(() => {
+    document.querySelectorAll('#shopModal .shop-tab').forEach(t => t.classList.remove('active'));
+    const t = document.querySelector('#shopModal .shop-tab[data-tab="skins"]');
+    if (t) t.classList.add('active');
+    document.getElementById('shopBoosts').style.display = 'none';
+    document.getElementById('shopSkins').style.display  = 'flex';
+    document.getElementById('shopBackgrounds').style.display = 'none';
+  }, 100);
+});
+
+goToBackgrounds.addEventListener('click', () => {
+  closeSettingsFn(); openShop();
+  setTimeout(() => {
+    document.querySelectorAll('#shopModal .shop-tab').forEach(t => t.classList.remove('active'));
+    const t = document.querySelector('#shopModal .shop-tab[data-tab="backgrounds"]');
+    if (t) t.classList.add('active');
+    document.getElementById('shopBoosts').style.display = 'none';
+    document.getElementById('shopSkins').style.display  = 'none';
+    document.getElementById('shopBackgrounds').style.display = 'flex';
+  }, 100);
+});
+
+resetProgress.addEventListener('click', () => {
+  if (!confirm('⚠️ Сбросить ВСЁ прогресс?')) return;
+  progress = {
+    unlocked: 0, completed: {}, records: {}, coins: 0, totalMoves: 0,
+    boosts: { extra:0, hint:0, shuffle:0, undo:0, skip:0 },
+    skins: { glass:true, neon:false, gold:false },
+    activeSkin: 'glass',
+    backgrounds: { default:true, cosmos:false, sunset:false, forest:false, ocean:false, candy:false, gold:false },
+    activeBg: 'default',
+    soundEnabled: soundEnabled,
+    vibrationEnabled: vibrationEnabled
+  };
+  saveProgress(); applyBackground(); closeSettingsFn();
+  startLevel(0); updateHUD(); sfxClick();
+  showToast('🔄 Прогресс сброшен');
+});
+
+document.querySelectorAll('#settingsModal .shop-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#settingsModal .shop-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.dataset.tab;
+    document.getElementById('settingsTabContent').style.display = target === 'settingsTab' ? 'block' : 'none';
+    document.getElementById('statsTabContent').style.display  = target === 'statsTab'  ? 'block' : 'none';
+    if (target === 'statsTab') updateStats();
+  });
+});
+
+document.querySelectorAll('#shopModal .shop-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#shopModal .shop-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.dataset.tab;
+    document.getElementById('shopBoosts').style.display      = target === 'boosts'      ? 'flex' : 'none';
+    document.getElementById('shopSkins').style.display       = target === 'skins'       ? 'flex' : 'none';
+    document.getElementById('shopBackgrounds').style.display = target === 'backgrounds' ? 'flex' : 'none';
+  });
+});
+
+document.querySelectorAll('.shop-buy').forEach(btn => {
+  if (btn.id === 'adExtraBuy' || btn.id === 'adCoinsBuy') return;
+  btn.addEventListener('click', () => onBuy(btn));
+});
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { closeModalFn(); closeShopFn(); closeSettingsFn(); }
+});
+
+document.addEventListener('click', () => {
+  initAudio();
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}, { once: false });
 
 /* ============================================================
-   СТАРТ
+   ЗАПУСК ИГРЫ
 ============================================================ */
-initVK();
-loadProgress();
+
+// 1) Сразу показываем игру (не ждём VK)
+loadFromLocal();
+applyBackground();
 startLevel(progress.unlocked);
+
+// 2) Параллельно инициализируем VK
+(async function bootstrap() {
+  const vkOk = await initVK();
+
+  if (vkOk) {
+    // Загружаем свежий прогресс из VK Storage
+    const saved = await vkStorageGet(STORAGE_KEY);
+    if (saved && typeof saved === 'object') {
+      const prevUnlocked = progress.unlocked;
+      progress = Object.assign(progress, saved);
+      progress.boosts = Object.assign({ extra:0, hint:0, shuffle:0, undo:0, skip:0 }, progress.boosts || {});
+      progress.skins = Object.assign({ glass:true, neon:false, gold:false }, progress.skins || {});
+      progress.backgrounds = Object.assign(
+        { default:true, cosmos:false, sunset:false, forest:false, ocean:false, candy:false, gold:false },
+        progress.backgrounds || {}
+      );
+      if (typeof progress.soundEnabled === 'boolean') soundEnabled = progress.soundEnabled;
+      if (typeof progress.vibrationEnabled === 'boolean') vibrationEnabled = progress.vibrationEnabled;
+
+      applyBackground();
+
+      if (progress.unlocked !== prevUnlocked) {
+        startLevel(progress.unlocked);
+      } else {
+        updateHUD();
+      }
+    }
+  }
+  updateHUD();
+})();
 </script>
 </body>
 </html>
